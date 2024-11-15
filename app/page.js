@@ -14,7 +14,7 @@ import { supabaseClient } from '@/lib/supabaseClient';
 export default function LandingPage() {
 
   const [user, setUser] = useState(null);
-  const [isLocalhost, setIsLocalhost] = useState(true);
+  const [isLocalhost, setIsLocalhost] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -39,15 +39,15 @@ export default function LandingPage() {
   };
 
   useEffect(() => {
-    if (window.location.hostname !== 'localhost') {
-      setIsLocalhost(false);
+    if (window.location.hostname === 'localhost') {
+      setIsLocalhost(true);
     }
   }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
       {
-        isLocalhost ? (
+        !isLocalhost ? (
           <div className="w-full bg-black text-center h-screen">
             <div className='h-screen flex flex-col justify-center'>
               <h1 className="text-[45px] font-bold text-white">Echoes</h1>
