@@ -40,7 +40,7 @@ export default function LandingPage() {
                     Type Through Memories or Conquer Challenges – You Decide.
                   </h1>
                   <p className="max-w-[600px] text-gray-500 md:text-xl">
-                    Embark on an emotional journey with a father's memories or jump straight into fast-paced typing challenges.
+                    Embark on an emotional journey with a father&rsquo;s memories or jump straight into fast-paced typing challenges.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
