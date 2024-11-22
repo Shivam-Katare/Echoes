@@ -11,6 +11,10 @@
     "zenquotes": {
       "type": "http",
       "baseUrl": "https://zenquotes.io/"
+    },
+    "supabase-db": {
+      "type": "postgresql",
+      "connString": "postgresql://postgres.mmtybpddrcnkqqdxfuzm:{{CONN_STRING}}@aws-0-ap-south-1.pooler.supabase.com:5432/postgres"
     }
   },
   "models": {

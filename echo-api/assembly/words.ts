@@ -1,24 +1,18 @@
-import { models } from "@hypermode/modus-sdk-as";
-import {
-  OpenAIChatModel,
-  ResponseFormat,
-  SystemMessage,
-  UserMessage,
-} from "@hypermode/modus-sdk-as/models/openai/chat";
+import { postgresql } from "@hypermode/modus-sdk-as"
 
-// This model name should match the one defined in the modus.json manifest file
-const modelName: string = "text-generator";
+@json
+class Word {
+  id!: number;
+  created_at!: string;
+  word!: string;
+  difficulty!: string;
+}
 
-export function generateText(instruction: string, prompt: string): string {
-  const model = models.getModel<OpenAIChatModel>(modelName)
-  const input = model.createInput([
-    new SystemMessage(instruction),
-    new UserMessage(prompt),
-  ])
+export function getWords(difficulty: string): Word[] {
+  const query = "SELECT * FROM words WHERE difficulty = $1";
+  const params = new postgresql.Params();
+  params.push(difficulty);
 
-  // this is one of many optional parameters available for the OpenAI chat interface
-  input.temperature = 0.7
-
-  const output = model.invoke(input)
-  return output.choices[0].message.content.trim()
+  const response = postgresql.query<Word>("supabase-db", query, params);
+  return response.rows;
 }

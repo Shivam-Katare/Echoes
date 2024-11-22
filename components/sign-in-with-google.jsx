@@ -1,14 +1,14 @@
 "use client";
 
-import { signInWithGoogle } from '@/lib/auth';
+import useAuthStore from '@/store/authStore';
 import React from 'react';
 
 const GoogleSignInButton = () => {
+
+  const { signInWithGoogle } = useAuthStore();
+
   const handleSignIn = async () => {
-    const { error } = await signInWithGoogle();
-    if (error) {
-      alert('Failed to sign in with Google');
-    }
+    signInWithGoogle();
   };
 
   return (

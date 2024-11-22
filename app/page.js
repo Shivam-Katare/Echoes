@@ -8,41 +8,23 @@ import GoogleSignInButton from '@/components/sign-in-with-google'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signOut } from '@/lib/auth'
-import { supabaseClient } from '@/lib/supabaseClient';
+import useAuthStore from '@/store/authStore';
 
 
 export default function LandingPage() {
 
-  const [user, setUser] = useState(null);
-  const [isLocalhost, setIsLocalhost] = useState(false);
+  const { user, fetchUser } = useAuthStore();
   const router = useRouter();
+  const [isLocalhost, setIsLocalhost] = useState(true);
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const { data: { session } } = await supabaseClient.auth.getSession();
-      setUser(session?.user || null);
-
-      // Redirect to dashboard if user is logged in
-      if (session?.user) {
-        router.push('/dashboard');
-      }
-    };
-    fetchUser();
+    fetchUser(); // Fetch user details on component mount
   }, []);
-
-  const handleSignOut = async () => {
-    const { error } = await signOut();
-    if (!error) {
-      setUser(null);
-      router.push('/'); // Redirect to home page after logout
-    }
-  };
 
   useEffect(() => {
-    if (window.location.hostname === 'localhost') {
-      setIsLocalhost(true);
-    }
+    setIsLocalhost(window.location.hostname === 'localhost');
   }, []);
+
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -57,7 +39,7 @@ export default function LandingPage() {
         ) :
 
           <div>
-            <header className="px-4 lg:px-6 h-14 flex items-center">
+            {/* <header className="px-4 lg:px-6 h-14 flex items-center">
               <Link className="flex items-center justify-center" href="/">
                 <Image
                   src="/placeholder.svg?height=32&width=32"
@@ -69,26 +51,23 @@ export default function LandingPage() {
                 <span className="ml-2 text-2xl font-bold text-gray-900">Echoes</span>
               </Link>
               <nav className="ml-auto flex gap-4 sm:gap-6">
-                <Link className="text-sm font-medium hover:underline underline-offset-4" href="#features">
-                  Features
-                </Link>
-                <Link className="text-sm font-medium hover:underline underline-offset-4" href="#how-it-works">
-                  How It Works
-                </Link>
-                {/* <Link className="text-sm font-medium hover:underline underline-offset-4" href="#contact">
-            Contact
-          </Link> */}
-                {user ? (
-                  <button className="text-sm font-medium hover:underline underline-offset-4" onClick={handleSignOut}>
+              {user ? (
+                <>
+                  <span className="text-sm font-medium">{user.email}</span>
+                  <button
+                    className="text-sm font-medium hover:underline underline-offset-4"
+                    onClick={() => useAuthStore.getState().handleSignOut()}
+                  >
                     Logout
                   </button>
-                ) : (
-                  <GoogleSignInButton />
-                )}
+                </>
+              ) : (
+                <GoogleSignInButton />
+              )}
               </nav>
-            </header>
+            </header> */}
             <main className="flex-1">
-              <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48">
+              <section className="w-full gradient-hero py-12 md:py-24 lg:py-32 xl:py-48 text-white">
                 <div className="container px-4 md:px-6">
                   <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
                     <div className="flex flex-col justify-center space-y-4">
@@ -104,7 +83,15 @@ export default function LandingPage() {
                         {/* <Button asChild>
                     <Link href="/login">Play With Story</Link>
                   </Button> */}
+                         <div className="flex flex-col gap-2 min-[400px]:flex-row">
+                      {user ? (
+                        <Link href="/play" className="btn-primary">
+                          Play Now
+                        </Link>
+                      ) : (
                         <GoogleSignInButton />
+                      )}
+                    </div>
                         <Button variant="outline" asChild>
                           <Link href="/play">Play Without Story</Link>
                         </Button>
