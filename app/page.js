@@ -31,7 +31,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {
-        isLocalhost ? (
+        !isLocalhost ? (
           <div className="w-full bg-black text-center h-screen">
             <div className='h-screen flex flex-col justify-center'>
               <h1 className="text-[45px] font-bold text-white">Echoes</h1>
