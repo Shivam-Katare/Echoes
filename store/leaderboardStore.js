@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { createClerkSupabaseClient } from '@/lib/supabaseClient';
+import toast from 'react-hot-toast';
 
 const useLeaderboardStore = create((set, get) => ({
   userId: null,
@@ -102,30 +103,31 @@ const useLeaderboardStore = create((set, get) => ({
     }
   },
 
-  saveLeaderboard: async (session, userId) => {
+  saveLeaderboard: async (session, userId, payload) => {
     if (!session) {
-      console.error("Session is required to save the leaderboard entry");
+      toast.error("Login required to save leaderboard entry. Please login and try again.");
       return;
     }
 
     const supabase = createClerkSupabaseClient(session);
-    const { username, score, words_typed, difficulty } = get();
-    console.log("Saving leaderboard entry:", { username, score, words_typed, difficulty });
     try {
-      const { error } = await supabase.from("LeaderBoard").insert({
-        user_id: userId,
-        userName: username,
-        difficulty,
-        words_typed: words_typed,
-        score,
-      });
-
-      if (error) {
-        console.error("Error saving leaderboard entry:", error.message);
-        return;
-      }
-
-      console.log("Leaderboard entry saved successfully");
+      await toast.promise(
+        supabase.from("LeaderBoard").insert({
+          user_id: userId,
+          userName: payload.userName,
+          difficulty: payload.difficulty,
+          words_typed: payload.words_typed,
+          correct_words_typed: payload.correct_words_typed,
+          incorrect_words_typed: payload.incorrect_words_typed,
+        }),
+        {
+          loading: "Saving leaderboard entry...",
+          success: "Leaderboard entry saved successfully!",
+          error: "Error saving leaderboard entry",
+        }
+      );
+      get().fetchLeaderboard(session);
+      get().fetchGlobalLeaderboard(session);
     } catch (err) {
       console.error("Unexpected error saving leaderboard entry:", err);
     }

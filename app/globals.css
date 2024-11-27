@@ -42,7 +42,7 @@ body {
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
-    --primary-foreground: 0 0% 9%;
+    --primary-foreground: 197 24% 94%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
     --muted: 0 0% 14.9%;
@@ -71,6 +71,23 @@ body {
   }
 }
 
+.global-background-color {
+  background: hsla(197, 24%, 94%, 1);
+  background: linear-gradient(360deg, hsla(197, 24%, 94%, 1) 0%, hsla(34, 100%, 71%, 1) 58%, hsla(44, 83%, 62%, 1) 93%, hsla(45, 99%, 49%, 1) 100%);
+  background: -moz-linear-gradient(360deg, hsla(197, 24%, 94%, 1) 0%, hsla(34, 100%, 71%, 1) 58%, hsla(44, 83%, 62%, 1) 93%, hsla(45, 99%, 49%, 1) 100%);
+  background: -webkit-linear-gradient(360deg, hsla(197, 24%, 94%, 1) 0%, hsla(34, 100%, 71%, 1) 58%, hsla(44, 83%, 62%, 1) 93%, hsla(45, 99%, 49%, 1) 100%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#EDF2F4", endColorstr="#FFBF69", GradientType=1 );
+}
+
+.fade-out {
+  opacity: 0;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+
 
 .gradient-hero {
   background: hsla(302, 41%, 13%, 1);
@@ -79,6 +96,74 @@ body {
   background: -webkit-linear-gradient(360deg, hsla(302, 41%, 13%, 1) 0%, #ffa13d 93%);
   filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#2D132C", endColorstr="#FFA13D", GradientType=1 );
   }
+.gradient-hero-2 {
+  background: hsla(0, 0%, 79%, 1);
+  background: linear-gradient(225deg, hsla(0, 0%, 79%, 1) 20%, hsla(0, 0%, 100%, 1) 87%);
+  background: -moz-linear-gradient(225deg, hsla(0, 0%, 79%, 1) 20%, hsla(0, 0%, 100%, 1) 87%);
+  background: -webkit-linear-gradient(225deg, hsla(0, 0%, 79%, 1) 20%, hsla(0, 0%, 100%, 1) 87%);
+  filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#C9C9C9", endColorstr="#FFFFFF", GradientType=1 );
+}
+
+.gradient-hero-3 {
+  background-image: linear-gradient(to left, #8d99ae, #a1afbf, #b8c6d0, #d2dce2, #edf2f4);
+}
+
+.gradient-hero-4 {
+  background-image: linear-gradient(to right, #8d99ae, #a1afbf, #b8c6d0, #d2dce2, #edf2f4);
+}
+
+.gradient-hero-5 {
+  background-image: linear-gradient(to left top, #003049, #1b2338, #1d1724, #160d13, #000000);
+}
+
+@keyframes float {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-float {
+  animation: float 8s ease-in-out infinite;
+}
+
+/* 
+ buttons: #eef0f2
+ links: 98c1d9
+*/
+
+/* Initial styles */
+.text-pretty {
+  font-family: 'YourFontFamily', sans-serif;
+}
+
+/* Add a delay to the blur effect and animate it */
+.blur-out {
+  display: inline-block; /* Ensures that the space is maintained */
+  animation: blurText 4s forwards; /* 4 seconds delay, you can adjust timing */
+}
+
+@keyframes blurText {
+  0% {
+    filter: blur(0);
+  }
+  50% {
+    filter: blur(3px);
+  }
+  100% {
+    filter: blur(5px);
+  }
+}
+
+.landing-img {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 56%);
+}
+
   @keyframes floating {
     0% {
       transform: translateY(0px);
@@ -249,4 +334,62 @@ body {
   100% {
     text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
   }
+}
+
+
+.text-focus-in {
+	-webkit-animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+	        animation: text-focus-in 1s cubic-bezier(0.550, 0.085, 0.680, 0.530) both;
+}
+/**
+ * ----------------------------------------
+ * animation text-focus-in
+ * ----------------------------------------
+ */
+ @-webkit-keyframes text-focus-in {
+  0% {
+    -webkit-filter: blur(12px);
+            filter: blur(12px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-filter: blur(0px);
+            filter: blur(0px);
+    opacity: 1;
+  }
+}
+@keyframes text-focus-in {
+  0% {
+    -webkit-filter: blur(12px);
+            filter: blur(12px);
+    opacity: 0;
+  }
+  100% {
+    -webkit-filter: blur(0px);
+            filter: blur(0px);
+    opacity: 1;
+  }
+}
+
+/* Free para typing styling */
+
+
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.text-shadow {
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.glow {
+  box-shadow: 0 0 20px rgba(74, 222, 128, 0.2);
+  transition: box-shadow 0.3s ease;
+}
+
+.glow:hover {
+  box-shadow: 0 0 30px rgba(74, 222, 128, 0.4);
 }

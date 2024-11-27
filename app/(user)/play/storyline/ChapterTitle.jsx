@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import React from 'react';
+import { poppins } from './StoryChunk';
 
 function ChapterTitleComponent({ chapterId, title, onComplete }) {
   return (
@@ -23,7 +24,7 @@ function ChapterTitleComponent({ chapterId, title, onComplete }) {
           Chapter {chapterId}
         </motion.h2>
         <motion.h1
-          className="text-6xl font-bold text-white"
+          className={`${poppins.className}text-6xl font-bold text-white`}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ delay: 0.8 }}

@@ -3,12 +3,14 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import GoogleSignInButton from '@/components/sign-in-with-google'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { signOut } from '@/lib/auth'
 import useAuthStore from '@/store/authStore';
+import Hero from '@/components/hero';
+import SectionTwo from '@/components/sections/section-two';
+import SectionOne from '@/components/sections/section-one';
+import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 
 
 export default function LandingPage() {
@@ -29,7 +31,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen">
       {
-        !isLocalhost ? (
+        isLocalhost ? (
           <div className="w-full bg-black text-center h-screen">
             <div className='h-screen flex flex-col justify-center'>
               <h1 className="text-[45px] font-bold text-white">Echoes</h1>
@@ -39,115 +41,13 @@ export default function LandingPage() {
         ) :
 
           <div>
-            {/* <header className="px-4 lg:px-6 h-14 flex items-center">
-              <Link className="flex items-center justify-center" href="/">
-                <Image
-                  src="/placeholder.svg?height=32&width=32"
-                  alt="Echoes Logo"
-                  width={32}
-                  height={32}
-                  className="rounded-lg"
-                />
-                <span className="ml-2 text-2xl font-bold text-gray-900">Echoes</span>
-              </Link>
-              <nav className="ml-auto flex gap-4 sm:gap-6">
-              {user ? (
-                <>
-                  <span className="text-sm font-medium">{user.email}</span>
-                  <button
-                    className="text-sm font-medium hover:underline underline-offset-4"
-                    onClick={() => useAuthStore.getState().handleSignOut()}
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <GoogleSignInButton />
-              )}
-              </nav>
-            </header> */}
             <main className="flex-1">
-              <section className="w-full gradient-hero py-12 md:py-24 lg:py-32 xl:py-48 text-white">
+              <Hero />
+              <SectionOne />
+              <SectionTwo />
+              <section id="how-it-works" className="w-full py-12 gradient-hero-5 md:py-24 lg:py-32">
                 <div className="container px-4 md:px-6">
-                  <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-                    <div className="flex flex-col justify-center space-y-4">
-                      <div className="space-y-2">
-                        <h1 className="text-3xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                          Type Through Memories or Conquer Challenges – You Decide.
-                        </h1>
-                        <p className="max-w-[600px] text-gray-500 md:text-xl">
-                          Embark on an emotional journey with a father&rsquo;s memories or jump straight into fast-paced typing challenges.
-                        </p>
-                      </div>
-                      <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                        {/* <Button asChild>
-                    <Link href="/login">Play With Story</Link>
-                  </Button> */}
-                         <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                      {user ? (
-                        <Link href="/play" className="btn-primary">
-                          Play Now
-                        </Link>
-                      ) : (
-                        <GoogleSignInButton />
-                      )}
-                    </div>
-                        <Button variant="outline" asChild>
-                          <Link href="/play">Play Without Story</Link>
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-center">
-                      <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[500px]">
-                        <Image
-                          src="/placeholder.svg?height=500&width=300"
-                          alt="Father and daughter fading imagery"
-                          layout="fill"
-                          objectFit="cover"
-                          className="rounded-lg opacity-50"
-                        />
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-4xl font-bold text-white animate-pulse">Type to Begin</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </section>
-              <section id="features" className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
-                <div className="container px-4 md:px-6">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">Feature Highlights</h2>
-                  <div className="grid gap-6 lg:grid-cols-3">
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Immersive Storyline</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p>Dive into a captivating narrative that unfolds with every keystroke.</p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Speed Typing Combat</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p>Test your typing skills in fast-paced battles against time and challenges.</p>
-                      </CardContent>
-                    </Card>
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>Leaderboards & Progression</CardTitle>
-                      </CardHeader>
-                      <CardContent>
-                        <p>Track your progress, compete with others, and climb the ranks.</p>
-                      </CardContent>
-                    </Card>
-                  </div>
-                </div>
-              </section>
-              <section id="how-it-works" className="w-full py-12 md:py-24 lg:py-32">
-                <div className="container px-4 md:px-6">
-                  <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">How It Works</h2>
+                  <h2 className="text-white text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">How It Works</h2>
                   <div className="grid gap-6 lg:grid-cols-4">
                     {[
                       { title: "Choose Your Mode", description: "Log in for the story or play as a guest." },
@@ -156,17 +56,17 @@ export default function LandingPage() {
                       { title: "Climb the Ranks", description: "Track your progress on the leaderboard." }
                     ].map((step, index) => (
                       <div key={index} className="flex flex-col items-center text-center">
-                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 text-gray-800 font-bold text-xl mb-4">
+                        <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 text-black font-bold text-xl mb-4">
                           {index + 1}
                         </div>
-                        <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                        <p className="text-gray-500">{step.description}</p>
+                        <h3 className="text-xl font-bold mb-2 text-white">{step.title}</h3>
+                        <p className="text-white">{step.description}</p>
                       </div>
                     ))}
                   </div>
                 </div>
               </section>
-              <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-100">
+              <section className="w-full py-12 md:py-24 lg:py-32 gradient-hero-3">
                 <div className="container px-4 md:px-6">
                   <div className="flex flex-col items-center space-y-4 text-center">
                     <div className="space-y-2">
@@ -176,12 +76,14 @@ export default function LandingPage() {
                       </p>
                     </div>
                     <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                      <Button asChild size="lg">
-                        <Link href="/login">Play With Story</Link>
-                      </Button>
-                      <Button variant="outline" asChild size="lg">
-                        <Link href="/play">Play Without Story</Link>
-                      </Button>
+                      <SignedOut>
+                        <SignInButton mode="modal">
+                          <Button variant="secondary" className="py-2 px-12 bg-black text-[#eef0f2] hover:bg-slate-800">Play it now!</Button>
+                        </SignInButton>
+                      </SignedOut>
+                      <SignedIn>
+                        <UserButton />
+                      </SignedIn>
                     </div>
                   </div>
                 </div>

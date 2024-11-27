@@ -1,9 +1,19 @@
-import React from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogOverlay } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
+import React, { useEffect } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogOverlay } from "@/components/ui/dialog";
 import { LucideTrash2 } from 'lucide-react';
 
-const TimesUpDialog = ({ isOpen, onClose, playData, onConfirm, isLoading }) => {
+const TimesUpDialog = ({ isOpen, onClose, playData, restartGame }) => {
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        onClose();
+        restartGame();
+      }, 5000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, onClose]);
+
   return (
     <Dialog open={isOpen}>
       <DialogOverlay className="bg-[#00000083] data-[state=open]:animate-overlayShow fixed inset-0" />
@@ -22,25 +32,6 @@ const TimesUpDialog = ({ isOpen, onClose, playData, onConfirm, isLoading }) => {
             You typed {playData?.typedWords} correct words in {playData?.time} seconds.
           </p>
         </div>
-
-        <DialogFooter className="w-full flex-row space-x-6 mb-6">
-          <Button
-            variant="outline"
-            onClick={onClose}
-            className="w-full rounded-[14px] p-[1.6rem]"
-            disabled={isLoading}
-          >
-            Go to Leaderboard
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={onConfirm}
-            className="w-full bg-primary text-primary-foreground rounded-[14px] hover:bg-[red] p-[1.6rem]"
-            disabled={isLoading}
-          >
-            Play Again
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );

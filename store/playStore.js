@@ -3,11 +3,12 @@ import { create } from 'zustand';
 
 const usePlayStore = create((set) => ({
   words: [],
+  paras: [],
   gameData: [],
   checkpoint: [],
   isLoading: false,
 
-  fetchCheckpoint: async (session) => {
+  fetchCheckpoint: async (session, userId) => {
     if (!session) {
       console.error('Session is required to fetch checkpoints');
       return;
@@ -20,16 +21,113 @@ const usePlayStore = create((set) => ({
       const { data, error } = await supabase
         .from('user_checkpoint')
         .select('*')
-        .order('chapter_id', { ascending: true })
-      set({ checkpoint: data, isLoading: false });
+        .eq('user_id', userId)
+        .order('chapter_id', { ascending: true });
+
+      if (error) {
+        console.error('Error fetching checkpoint:', error);
+        set({
+          checkpoint: [
+            {
+              id: 0, // Default ID
+              created_at: new Date().toISOString(), // Default timestamp
+              chapter_id: 1,
+              last_chunk_id: 1,
+              user_id: userId || "", // Use provided userId or empty string
+            },
+          ],
+          isLoading: false,
+        });
+        return;
+      }
+
+      // Set default if data is empty or null
+      set({
+        checkpoint: data && data.length > 0
+          ? data
+          : [
+            {
+              id: 0, // Default ID
+              created_at: new Date().toISOString(), // Default timestamp
+              chapter_id: 1,
+              last_chunk_id: 1,
+              user_id: userId || "", // Use provided userId or empty string
+            },
+          ],
+        isLoading: false,
+      });
     } catch (error) {
-      set({ checkpoint: [], isLoading: false });
+      console.error('Unexpected error:', error);
+      set({
+        checkpoint: [
+          {
+            id: 0, // Default ID
+            created_at: new Date().toISOString(), // Default timestamp
+            chapter_id: 1,
+            last_chunk_id: 1,
+            user_id: userId || "", // Use provided userId or empty string
+          },
+        ],
+        isLoading: false,
+      });
+    }
+  },
+
+  updateCheckpoint: async (session, userId, checkpointData) => {
+    if (!session) {
+      console.error('Session is required to update checkpoints');
+      return;
+    }
+  
+    const supabase = createClerkSupabaseClient(session);
+    set({ isLoading: true });
+  
+    try {
+      const { data, error } = await supabase
+        .from('user_checkpoint')
+        .select('*')
+        .eq('user_id', userId);
+  
+      if (error) {
+        console.error('Error fetching checkpoint:', error);
+        set({ isLoading: false });
+        return;
+      }
+  
+      if (data && data.length > 0) {
+        // Update existing checkpoint
+        const { error: updateError } = await supabase
+          .from('user_checkpoint')
+          .update(checkpointData)
+          .eq('user_id', userId);
+  
+        if (updateError) {
+          console.error('Error updating checkpoint:', updateError);
+        }
+      } else {
+        // Insert new checkpoint
+        const { error: insertError } = await supabase
+          .from('user_checkpoint')
+          .insert({
+            chapter_id: currentChapter + 1,
+            user_id: userId,
+            last_chunk_id: 1,
+          });
+  
+        if (insertError) {
+          console.error('Error inserting checkpoint:', insertError);
+        }
+      }
+    } catch (error) {
+      console.error('Unexpected error:', error);
+    } finally {
+      set({ isLoading: false });
     }
   },
 
   fetchWords: async (difficulty) => {
-    const endpoint = "https://echoes-shivam.hypermode.app/graphql"; // Replace with your Modus API endpoint
-    const key = process.env.NEXT_PUBLIC_MODUS_ENV; // Replace with your Modus API key
+    const endpoint = "https://echoes-shivam.hypermode.app/graphql";
+    const key = process.env.NEXT_PUBLIC_MODUS_ENV; 
 
     const query = `
       query Words($difficulty: String!) {
@@ -41,7 +139,7 @@ const usePlayStore = create((set) => ({
         }
       }
     `;
-
+    set({ isLoading: true });
     try {
       const response = await fetch(endpoint, {
         method: "POST",
@@ -58,9 +156,43 @@ const usePlayStore = create((set) => ({
       const data = await response.json();
       const words = data?.data?.words || [];
       set({ words });
-      console.log("Words fetched:", words);
     } catch (error) {
-      console.error("Error fetching words:", error);
+      set({ words: [], isLoading: false });
+    }
+  },
+
+  fetchParas: async () => {
+    const endpoint = "http://localhost:8686/graphql";
+    const key = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjMwMTMxMjEsImlhdCI6MTczMTQ3NzEyMSwiaXNzIjoiaHlwZXJtb2RlLmNvbSIsInN1YiI6ImFway0wMTkzMjQxNC0yYjIxLTczOTktOTM1Yy1lMDdjZWQ4YzNmMmUifQ.djDJi3yNN3l2qLfK3xiacvYIW7yd5sqtIxNajBdKNfyU5DCe2hzmFwpTxyP1_lzHSRx-8y5jWSv7W66iYVnQQg";
+
+    const query = `
+      query Words() {
+        paras {
+         id
+         created_at
+         para
+       }
+      }
+    `;
+    set({ isLoading: true });
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${key}`,
+        },
+        body: JSON.stringify({
+          query
+        }),
+      });
+
+      const data = await response.json();
+      const paras = data?.data?.paras || [];
+      set({ paras });
+    } catch (error) {
+      console.error('Error fetching paras:', error);
+      set({ paras: [], isLoading: false });
     }
   },
 

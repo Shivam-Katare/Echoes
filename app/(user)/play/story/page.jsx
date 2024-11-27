@@ -1,36 +1,31 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
-import React, { useEffect, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-} from "@/components/ui/select";
+import React, { useCallback, useEffect, useState } from "react";
 import usePlayStore from "@/store/playStore";
 import TimesUpDialog from "@/components/dialogs/timesup-dialog";
-import { CountdownCircleTimer } from "react-countdown-circle-timer";
-import { IterationCw } from "lucide-react";
+import { List, Music } from "lucide-react";
 import useLeaderboardStore from "@/store/leaderboardStore";
 import { useSession } from "@clerk/nextjs";
 import { useUser } from '@clerk/nextjs';
-import { Button } from "@/components/ui/button";
-import LoadingSpinner from "@/components/loading-spinner";
+import { BackgroundParticles } from "@/components/background-particles";
+import SelectTypingCategoryDialog from "@/components/dialogs/select-typing-category-dialog";
+import { Toaster } from "react-hot-toast";
+import useGameSettingsStore from "@/store/useGameSettings";
+import { categoryGradients } from "@/lib/utils";
+import { playfair } from "../../layout";
+import WordsTypingArea from "./WordsTypingArea";
+import TopUserLeaderboard from "./TopUserLeaderboard";
+import SentenceTyping from "./SentenceTyping";
 
 function Story() {
   const [input, setInput] = useState("");
-  const [difficulty, setDifficulty] = useState("easy");
-  const { words, fetchWords } = usePlayStore();
+  const { words, paras, fetchWords, fetchParas } = usePlayStore(); 
+  const { difficulty, category, challangeType, time } = useGameSettingsStore();
   const [displayWords, setDisplayWords] = useState([]);
   const [correctCount, setCorrectCount] = useState(0);
   const [incorrectCount, setIncorrectCount] = useState(0);
-  const [timer, setTimer] = useState(15);
-  const [recentWords, setRecentWords] = useState([]); // Track recently used words
+  const [timer, setTimer] = useState(parseInt(time));
+  const [recentWords, setRecentWords] = useState([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isGameActive, setIsGameActive] = useState(false);
   const [showCountdown, setShowCountdown] = useState(false);
@@ -40,41 +35,30 @@ function Story() {
   const user_id = user?.id ?? '';
   const userProfile = user?.imageUrl ?? '';
   const { session } = useSession();
-  useEffect(() => {
-    if (!session) return;
-    fetchGlobalLeaderboard(session);
-    fetchLeaderboard(session);
-  }, [session, fetchLeaderboard]);
+  const [bgGradient, setBgGradient] = useState(
+    `linear-gradient(360deg, hsla(197, 24%, 94%, 1) 0%, hsla(34, 100%, 71%, 1) 58%, hsla(44, 83%, 62%, 1) 93%, hsla(45, 99%, 49%, 1) 100%)`
+  ); // Default gradient
+  const [animationClass, setAnimationClass] = useState('');
+  const bgStyles = {
+    glassmorphism: {
+      backdropFilter: "blur(10px)",
+      backgroundColor: "rgba(255, 255, 255, 0.2)",
+      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.1)",
+      border: "1px solid rgba(255, 255, 255, 0.18)",
+    },
+  };
 
-  useEffect(() => {
-    fetchWords(difficulty);
-  }, [difficulty, fetchWords]);
+  const [isFirstDialogOpen, setIsFirstDialogOpen] = useState(false);
 
-  // Initialize the first set of words
-  useEffect(() => {
-    if (words.length > 0) {
-      const initialWords = words.slice(0, 5);
-      setDisplayWords(initialWords);
-      setRecentWords(initialWords.map((wordObj) => wordObj.word));
-    }
-  }, [words]);
-
+  // States for SentenceTyping
+  const [text, setText] = useState('');
+  const [currentText, setCurrentText] = useState('');
+  const [currentPara, setCurrentPara] = useState('');
 
   const handleStartGame = () => {
     setShowCountdown(true);
   };
 
-  useEffect(() => {
-    if (showCountdown && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-    if (countdown === 0) {
-      setIsGameActive(true);
-      setShowCountdown(false);
-      setCountdown(3);
-    }
-  }, [countdown, showCountdown]);
 
   const handleTimerComplete = async () => {
     setIsDialogOpen(true);
@@ -82,15 +66,21 @@ function Story() {
     setShowCountdown(false);
     setCountdown(3);
     if (session) {
-      await saveLeaderboard(session, user_id);
+      const payload = {
+        userName: user?.fullName ?? '',
+        difficulty,
+        words_typed: correctCount + incorrectCount,
+        correct_words_typed: correctCount,
+        incorrect_words_typed: incorrectCount,
+      }
+      // await saveLeaderboard(session, user_id, payload);
     }
     return [false, 0];
   };
 
-
   // Restart game
   const handleRestart = () => {
-    setTimer(15);
+    setTimer(parseInt(time));
     setCorrectCount(0);
     setIncorrectCount(0);
     setInput("");
@@ -98,8 +88,8 @@ function Story() {
     setRecentWords(words.slice(0, 5).map((wordObj) => wordObj.word));
     setIsDialogOpen(false);
     setIsGameActive(false);
+    initializeGame();
   };
-
 
   // Input logic
   const handleInputChange = (e) => setInput(e.target.value);
@@ -139,179 +129,286 @@ function Story() {
     }
   };
 
+  const handleSentenceInput = (e) => {
+    const value = e.target.value;
+
+    // Only allow typing up to the first incorrect character
+    let newValue = '';
+    let i = 0;
+
+    // Check each character until we find a mismatch or reach the end
+    while (i < value.length && i < text.length) {
+      if (value[i] === text[i]) {
+        newValue += value[i];
+        i++;
+      } else {
+        // If character is incorrect, only keep up to this point
+        // and increment incorrect count
+        setIncorrectCount(prev => prev + 1);
+        break;
+      }
+    }
+
+    setCurrentText(newValue);
+    setCorrectCount(newValue.length); // Correct count is the length of matching characters
+
+    // Check if the sentence is completed correctly
+    if (newValue === text) {
+      setTimeout(() => {
+        // Generate new sentence
+        const SAMPLE_TEXTS = [
+          'The quick brown fox jumps over the lazy dog',
+          'The five boxing wizards jump quickly',
+          'Pack my box with five dozen liquor jugs',
+          'How razorback-jumping frogs can level six piqued gymnasts',
+          'Cozy lummox gives smart squid',
+          'Jaded zombies acted quaintly but kept driving their oxen forward',
+        ];
+
+        // Get a new random sentence different from the current one
+        let newText;
+        do {
+          newText = SAMPLE_TEXTS[Math.floor(Math.random() * SAMPLE_TEXTS.length)];
+        } while (newText === text);
+
+        // Set the new sentence and reset the states
+        setText(newText);
+        setCurrentText('');
+        setCorrectCount(0);
+        setIncorrectCount(0);
+      }, 500);
+    }
+  };
+
+  const SAMPLE_TEXTS = [
+    'The quick brown fox jumps over the lazy dog',
+    'The five boxing wizards jump quickly',
+    'Pack my box with five dozen liquor jugs',
+    'How razorback-jumping frogs can level six piqued gymnasts',
+    'Cozy lummox gives smart squid',
+    'Jaded zombies acted quaintly but kept driving their oxen forward',
+  ];
+
+  const handleChangeColor = () => {
+    if (category?.name) {
+      // Trigger fade-out animation
+      setAnimationClass('fade-out');
+      setTimeout(() => {
+        // Update gradient and trigger fade-in
+        setBgGradient(categoryGradients[category.name] || bgGradient);
+        setAnimationClass('fade-in');
+      }, 500); // Match this to the CSS animation duration
+    }
+  };
+
+  const initializeGame = useCallback(() => {
+    if (paras && paras.length > 0) {
+      const para = paras[0].para;
+      // Take first 150 characters to show a manageable portion
+      const shortenedPara = para.substring(0, 150) + '...';
+      setText(shortenedPara);
+      setCurrentPara(shortenedPara);
+      setCurrentText('');
+      setCorrectCount(0);
+      setIncorrectCount(0);
+      setIsGameActive(false);
+    }
+  }, [paras, setText, setCurrentText, setCorrectCount, setIncorrectCount, setIsGameActive]);
+
+  useEffect(() => {
+    if (!session) return;
+    fetchGlobalLeaderboard(session);
+    // fetchLeaderboard(session);
+  }, [session, fetchLeaderboard]);
+
+  useEffect(() => {
+    if (challangeType === 'words') {
+      fetchWords(difficulty);
+    } else {
+      fetchParas();
+    }
+  }, [difficulty, fetchWords, fetchParas, category]);
+
+  // Initialize the first set of words
+  useEffect(() => {
+    if (words.length > 0) {
+      const initialWords = words.slice(0, 5);
+      setDisplayWords(initialWords);
+      setRecentWords(initialWords.map((wordObj) => wordObj.word));
+    }
+  }, [words]);
+
+  useEffect(() => {
+    if (showCountdown && countdown > 0) {
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+    if (countdown === 0) {
+      setIsGameActive(true);
+      setShowCountdown(false);
+      setCountdown(3);
+    }
+  }, [countdown, showCountdown]);
+
+  useEffect(() => {
+    if (!isFirstDialogOpen) {
+      setIsFirstDialogOpen(true);
+    }
+  }, [])
+
+  useEffect(() => {
+    let intervalId;
+
+    if (isGameActive && timer > 0) {
+      intervalId = setInterval(() => {
+        setTimer(prevTimer => {
+          if (prevTimer <= 1) {
+            handleTimerComplete();
+            return 0;
+          }
+          return prevTimer - 1;
+        });
+      }, 1000);
+    }
+
+    return () => {
+      if (intervalId) {
+        clearInterval(intervalId);
+      }
+    };
+  }, [isGameActive, timer]);
+
+
+  useEffect(() => {
+    if (showCountdown && paras && paras.length > 0) {
+      const para = paras[0].para;
+      // const shortenedPara = para.substring(0, 150) + '...';
+      setText(para);
+
+      const countdownInterval = setInterval(() => {
+        setCountdown((prev) => {
+          if (prev <= 1) {
+            setShowCountdown(false);
+            setIsGameActive(true);
+            clearInterval(countdownInterval);
+            return 3;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+
+      return () => clearInterval(countdownInterval);
+    }
+  }, [showCountdown, paras]);
+
   return (
-    <main className="mt-24 pb-8 text-black">
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:max-w-7xl lg:px-8">
-        <h1 className="sr-only">Page title</h1>
+    <main className={`min-h-screen pb-8 ${animationClass} gradient-hero-4`}
+
+      style={{
+        // background: bgGradient,
+        transition: 'opacity 0.5s ease-in-out',
+      }}
+
+    >
+      <BackgroundParticles />
+      <div className="absolute top-4 left-4 flex items-center gap-4 z-50 mt-16">
+        <button
+          aria-label="Toggle Music"
+          onClick={() => console.log('Toggle Music')}
+          className="p-2 bg-white/80 rounded-full shadow-lg hover:bg-white/90 transition duration-300"
+        >
+          <Music className="h-6 w-6 text-black" />
+        </button>
+        <button
+          aria-label="Select Typing Category"
+          onClick={() => setIsFirstDialogOpen(true)}
+          className="p-2 bg-white/80 rounded-full shadow-lg hover:bg-white/90 transition duration-300"
+        >
+          <List className="h-6 w-6 text-black" />
+        </button>
+      </div>
+      <div className="mx-auto max-w-3xl px-4 relative z-10 sm:px-6 lg:max-w-7xl lg:px-8">
         {/* Main 3 column grid */}
-        <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
-          {/* Left column */}
-          <div className="grid grid-cols-1 gap-4 lg:col-span-2">
-            <section aria-labelledby="section-1-title">
-              <h2 id="section-1-title" className="text-white text-center">
-                Play the game
-              </h2>
-              <div className="overflow-hidden rounded-lg bg-white shadow">
-                <div className="p-6">
-                  <div className="overflow-hidden rounded-lg bg-white shadow">
-                    <div className="px-4 py-5 sm:p-6 grid place-items-center min-h-72">
-                      {!isGameActive && !showCountdown && (
-                        <motion.button
-                          onClick={handleStartGame}
-                          className="mt-2 px-6 py-3 text-lg bg-gradient-to-r from-green-400 to-blue-500 rounded-lg text-white font-bold"
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
-                        >
-                          Start Game
-                        </motion.button>
-                      )}
-
-                      {/* Countdown Timer */}
-                      {showCountdown && (
-                        <AnimatePresence>
-                          <motion.div
-                            key={countdown}
-                            className="text-[64px] font-bold mt-8 text-black"
-                          >
-                            {countdown}
-                          </motion.div>
-                        </AnimatePresence>
-                      )}
-                      {/* Words Area */}
-                      {
-                        isGameActive && (
-                          <div
-                            className="max-w-[56rem]"
-                            style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "14rem" }}
-                          >
-                            <div
-                              className="h-[11rem] w-[45rem] rounded-[10px] flex justify-center items-center p-5"
-                              style={{
-                                color: "#fff",
-                                textAlign: "center",
-                              }}
-                            >
-                              <AnimatePresence>
-                                {displayWords.map((wordObj, index) => (
-                                  <motion.span
-                                    key={wordObj.id}
-                                    initial={{ opacity: 0, scale: 0.8 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{
-                                      opacity: 0,
-                                      scale: 0.8,
-                                      backgroundColor: index === 0 ? (input === wordObj.word ? "green" : "red") : "black",
-                                      transition: { duration: 0.5 },
-                                    }}
-                                    className={`mx-2 px-2 py-1 rounded ${index === 0 ? "bg-black" : "bg-gray-700"
-                                      }`}
-                                  >
-                                    {wordObj.word}
-                                  </motion.span>
-                                ))}
-                              </AnimatePresence>
-                            </div>
-                          </div>
-                        )
-                      }
-
-                    </div>
-                    <div className="bg-gray-50 px-4 py-4 sm:px-6">
-                      <div className="grid grid-cols-[0.2fr_0.8fr_0.2fr] justify-items-center items-center">
-
-                        <div>
-                          <IterationCw className="h-8 w-8 text-white" onClick={handleRestart} />
-                        </div>
-
-                        <Input
-                          type="text"
-                          placeholder="Type here..."
-                          className="text-black"
-                          value={input}
-                          onChange={handleInputChange}
-                          onKeyPress={handleKeyPress}
-                          disabled={!isGameActive}
-                        />
-                        {isGameActive &&
-                          <div>
-                            <CountdownCircleTimer
-                              isPlaying
-                              duration={15}
-                              colors={["#004777", "#F7B801", "#A30000", "#A30000"]}
-                              colorsTime={[10, 6, 3, 0]}
-                              onComplete={handleTimerComplete}
-                              size={30}
-                              strokeWidth={3}
-                            >
-                              {({ remainingTime }) => <div className="text-[12px]">{remainingTime}s</div>}
-                            </CountdownCircleTimer>
-                          </div>
-                        }
-
-                      </div>
+        {
+          challangeType === 'words' ? (
+            <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
+              {/* Left column */}
+              <div className="mt-16 grid grid-cols-1 gap-4 lg:col-span-2">
+                <section aria-labelledby="section-1-title">
+                  <h2 id="section-1-title" className="text-white text-center">
+                    Play the game
+                  </h2>
+                  <div className="overflow-hidden rounded-lg shadow" style={bgStyles.glassmorphism}>
+                    <div className="p-6">
+                      <WordsTypingArea
+                        isGameActive={isGameActive}
+                        showCountdown={showCountdown}
+                        countdown={countdown}
+                        displayWords={displayWords}
+                        input={input}
+                        handleStartGame={handleStartGame}
+                        handleInputChange={handleInputChange}
+                        handleKeyPress={handleKeyPress}
+                        handleRestart={handleRestart}
+                        handleTimerComplete={handleTimerComplete}
+                        timer={timer}
+                      />
                     </div>
                   </div>
-                </div>
+                </section>
               </div>
-            </section>
-          </div>
 
-          {/* Right column */}
-          <div className="grid grid-cols-1 gap-4">
-            <section aria-labelledby="section-2-title">
-              <h2 id="section-2-title" className="text-black text-center font-extrabold">
-                Leaderboard
-              </h2>
-              <div className="overflow-hidden rounded-lg bg-white shadow">
-                <div className="p-6">
-                  <div className="overflow-x-auto shadow-md rounded-[12px] sm:w-full min-h-96">
-                    {
-                      isLoading ? (
-                        <LoadingSpinner />
-                      ) : (
-                        <table className="text-sm text-left rtl:text-right text-gray-500 w-full">
-                          <thead className="text-base bg-secondary">
-                            <tr>
-                              <th scope='col' className='px-6 py-3'>Rank</th>
-                              <th scope="col" className="px-6 py-3">Username</th>
-                              <th scope="col" className="px-6 py-3">Score</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {globalLeaderboard && globalLeaderboard.map((history, index) => (
-                              <tr key={history.id} className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600`}>
-                                <td className='px-6 py-4'>#{history?.rank}</td>
-                                <td className="px-6 py-4 min-w-20">{history.userName || "--"}</td>
-                                <td className="px-6 py-4 min-w-20">{history.total_score || "--"}</td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      )
-                    }
+              {/* Right column */}
+              <div className="mt-16 grid grid-cols-1 gap-4">
+                <section aria-labelledby="section-2-title">
+                  <h2 id="section-2-title" className={`${playfair.className}text-white text-center font-extrabold text-[20px]`}>
+                    Leaderboard
+                  </h2>
+                  <div className="overflow-hidden rounded-lg shadow" style={bgStyles.glassmorphism}>
+                    <div className="p-6">
+                      <TopUserLeaderboard
+                        isLoading={isLoading}
+                        globalLeaderboard={globalLeaderboard}
+                      />
+                    </div>
                   </div>
-                  <Button
-                    className="mt-4"
-                    onClick={() => console.log('Check complete leaderboard')}
-                  >
-                    Check complete leaderboard
-                  </Button>
-                </div>
+                </section>
               </div>
-            </section>
-          </div>
-        </div>
+            </div>
+          ) : (
+            <SentenceTyping
+              isGameActive={isGameActive}
+              showCountdown={showCountdown}
+              countdown={countdown}
+              text={text}
+              currentText={currentText}
+              handleInputChange={handleSentenceInput}
+              handleRestart={handleRestart}
+              setShowCountdown={setShowCountdown}
+              timer={timer}
+            />
+          )
+        }
+
       </div>
       <TimesUpDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         playData={{ typedWords: correctCount + incorrectCount, time: timer }}
-        onConfirm={() => setIsDialogOpen(false)}
+        restartGame={handleRestart}
         isLoading={false}
       />
+
+      <SelectTypingCategoryDialog
+        isOpen={isFirstDialogOpen}
+        onClose={() => setIsFirstDialogOpen(false)}
+        onConfirm={() => setIsFirstDialogOpen(false)}
+        changeColor={handleChangeColor}
+      />
+
+      <Toaster />
     </main>
+
   );
 }
 
