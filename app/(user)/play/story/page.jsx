@@ -16,6 +16,7 @@ import { playfair } from "../../layout";
 import WordsTypingArea from "./WordsTypingArea";
 import TopUserLeaderboard from "./TopUserLeaderboard";
 import SentenceTyping from "./SentenceTyping";
+import { getRandomWords } from './utils';
 
 function Story() {
   const [input, setInput] = useState("");
@@ -73,7 +74,7 @@ function Story() {
         correct_words_typed: correctCount,
         incorrect_words_typed: incorrectCount,
       }
-      // await saveLeaderboard(session, user_id, payload);
+      await saveLeaderboard(session, user_id, payload);
     }
     return [false, 0];
   };
@@ -84,50 +85,82 @@ function Story() {
     setCorrectCount(0);
     setIncorrectCount(0);
     setInput("");
-    setDisplayWords(words.slice(0, 5));
-    setRecentWords(words.slice(0, 5).map((wordObj) => wordObj.word));
+    const initialWords = getRandomWords(words);
+    setDisplayWords(initialWords);
+    setRecentWords(initialWords.map((wordObj) => wordObj.word));
     setIsDialogOpen(false);
     setIsGameActive(false);
-    initializeGame();
+    setText('');
+    setCurrentText('');
+    setCurrentPara('');
+    if (challangeType === 'paragraphs') {
+        fetchParas();
+    } else {
+        fetchWords(difficulty);
+    }
+    // initializeGame();
   };
 
   // Input logic
   const handleInputChange = (e) => setInput(e.target.value);
 
   const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      const isCorrect = input === displayWords[0]?.word;
+    if (e.key === "Enter" && displayWords.length > 0 && input.trim()) {
+        e.preventDefault(); // Prevent default enter behavior
+        
+        const currentWord = displayWords[0]?.word;
+        const isCorrect = input.trim() === currentWord;
 
-      // Animate removal of the word
-      setDisplayWords((prevWords) => {
-        const newWords = [...prevWords.slice(1)];
+        // Update scores immediately to prevent race conditions
+        if (isCorrect) {
+            setCorrectCount((prev) => prev + 1);
+        } else {
+            setIncorrectCount((prev) => prev + 1);
+        }
 
-        // Generate a new word that is not in recent history
-        let nextWord;
-        do {
-          nextWord = words[Math.floor(Math.random() * words.length)];
-        } while (recentWords.includes(nextWord.word));
+        // Clear input immediately
+        setInput("");
 
-        // Add the new word and update the recent history
-        newWords.push(nextWord);
-        setRecentWords((prevHistory) => {
-          const updatedHistory = [...prevHistory.slice(-4), nextWord.word]; // Keep last 5 words
-          return updatedHistory;
+        // Use functional updates to ensure state consistency
+        setDisplayWords((prevWords) => {
+            // Safety check for empty array
+            if (prevWords.length === 0) return prevWords;
+
+            const newWords = [...prevWords.slice(1)];
+
+            // Generate new word with retry mechanism
+            const getNewWord = () => {
+                const maxAttempts = 10;
+                let attempts = 0;
+                let nextWord;
+
+                while (attempts < maxAttempts) {
+                    nextWord = words[Math.floor(Math.random() * words.length)];
+                    if (!recentWords.includes(nextWord.word)) {
+                        break;
+                    }
+                    attempts++;
+                    console.log('Attempt:', attempts);
+                }
+
+                // Fallback if no unique word found
+                return nextWord || words[Math.floor(Math.random() * words.length)];
+            };
+
+            const nextWord = getNewWord();
+            newWords.push(nextWord);
+
+            // Update recent words history
+            setRecentWords((prevHistory) => {
+                const updatedHistory = [...prevHistory.slice(-4), nextWord.word];
+                return updatedHistory;
+            });
+
+            return newWords;
         });
-
-        return newWords;
-      });
-
-      // Update scores
-      if (isCorrect) {
-        setCorrectCount(correctCount + 1);
-      } else {
-        setIncorrectCount(incorrectCount + 1);
-      }
-
-      setInput(""); // Clear input
     }
-  };
+};
+
 
   const handleSentenceInput = (e) => {
     const value = e.target.value;
@@ -154,21 +187,10 @@ function Story() {
 
     // Check if the sentence is completed correctly
     if (newValue === text) {
-      setTimeout(() => {
         // Generate new sentence
-        const SAMPLE_TEXTS = [
-          'The quick brown fox jumps over the lazy dog',
-          'The five boxing wizards jump quickly',
-          'Pack my box with five dozen liquor jugs',
-          'How razorback-jumping frogs can level six piqued gymnasts',
-          'Cozy lummox gives smart squid',
-          'Jaded zombies acted quaintly but kept driving their oxen forward',
-        ];
-
-        // Get a new random sentence different from the current one
         let newText;
         do {
-          newText = SAMPLE_TEXTS[Math.floor(Math.random() * SAMPLE_TEXTS.length)];
+          newText = paras[Math.floor(Math.random() * paras.length)].para;
         } while (newText === text);
 
         // Set the new sentence and reset the states
@@ -176,18 +198,8 @@ function Story() {
         setCurrentText('');
         setCorrectCount(0);
         setIncorrectCount(0);
-      }, 500);
     }
-  };
-
-  const SAMPLE_TEXTS = [
-    'The quick brown fox jumps over the lazy dog',
-    'The five boxing wizards jump quickly',
-    'Pack my box with five dozen liquor jugs',
-    'How razorback-jumping frogs can level six piqued gymnasts',
-    'Cozy lummox gives smart squid',
-    'Jaded zombies acted quaintly but kept driving their oxen forward',
-  ];
+};
 
   const handleChangeColor = () => {
     if (category?.name) {
@@ -201,19 +213,19 @@ function Story() {
     }
   };
 
-  const initializeGame = useCallback(() => {
-    if (paras && paras.length > 0) {
-      const para = paras[0].para;
-      // Take first 150 characters to show a manageable portion
-      const shortenedPara = para.substring(0, 150) + '...';
-      setText(shortenedPara);
-      setCurrentPara(shortenedPara);
-      setCurrentText('');
-      setCorrectCount(0);
-      setIncorrectCount(0);
-      setIsGameActive(false);
-    }
-  }, [paras, setText, setCurrentText, setCorrectCount, setIncorrectCount, setIsGameActive]);
+  // const initializeGame = useCallback(() => {
+  //   if (paras && paras.length > 0) {
+  //     const para = paras[0].para;
+  //     // Take first 150 characters to show a manageable portion
+  //     const shortenedPara = para.substring(0, 150) + '...';
+  //     setText(shortenedPara);
+  //     setCurrentPara(shortenedPara);
+  //     setCurrentText('');
+  //     setCorrectCount(0);
+  //     setIncorrectCount(0);
+  //     setIsGameActive(false);
+  //   }
+  // }, [paras, setText, setCurrentText, setCorrectCount, setIncorrectCount, setIsGameActive]);
 
   useEffect(() => {
     if (!session) return;
@@ -224,19 +236,20 @@ function Story() {
   useEffect(() => {
     if (challangeType === 'words') {
       fetchWords(difficulty);
-    } else {
+    } 
+    if (challangeType === 'paragraphs') {
       fetchParas();
     }
-  }, [difficulty, fetchWords, fetchParas, category]);
+  }, [difficulty, fetchWords, fetchParas, challangeType]);
 
   // Initialize the first set of words
   useEffect(() => {
     if (words.length > 0) {
-      const initialWords = words.slice(0, 5);
-      setDisplayWords(initialWords);
-      setRecentWords(initialWords.map((wordObj) => wordObj.word));
+        const initialWords = getRandomWords(words);
+        setDisplayWords(initialWords);
+        setRecentWords(initialWords.map((wordObj) => wordObj.word));
     }
-  }, [words]);
+}, [words]);
 
   useEffect(() => {
     if (showCountdown && countdown > 0) {
@@ -333,11 +346,8 @@ function Story() {
           challangeType === 'words' ? (
             <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-3 lg:gap-8">
               {/* Left column */}
-              <div className="mt-16 grid grid-cols-1 gap-4 lg:col-span-2">
+              <div className="mt-24 grid grid-cols-1 gap-4 lg:col-span-2">
                 <section aria-labelledby="section-1-title">
-                  <h2 id="section-1-title" className="text-white text-center">
-                    Play the game
-                  </h2>
                   <div className="overflow-hidden rounded-lg shadow" style={bgStyles.glassmorphism}>
                     <div className="p-6">
                       <WordsTypingArea
@@ -385,6 +395,7 @@ function Story() {
               handleInputChange={handleSentenceInput}
               handleRestart={handleRestart}
               setShowCountdown={setShowCountdown}
+              handleTimerComplete={handleTimerComplete}
               timer={timer}
             />
           )

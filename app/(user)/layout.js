@@ -9,7 +9,7 @@ const Layout = React.memo(({ children }) => {
   return (
     <div className="h-screen">
       {/* <Navbar /> */}
-      <div className="w-full global-background-color min-h-screen">
+      <div className="w-full  gradient-hero-4 min-h-screen">
         {children}
       </div>
     </div>

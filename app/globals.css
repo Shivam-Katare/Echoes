@@ -78,7 +78,7 @@ body {
   background: -webkit-linear-gradient(360deg, hsla(197, 24%, 94%, 1) 0%, hsla(34, 100%, 71%, 1) 58%, hsla(44, 83%, 62%, 1) 93%, hsla(45, 99%, 49%, 1) 100%);
   filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#EDF2F4", endColorstr="#FFBF69", GradientType=1 );
 }
-
+/* 
 .fade-out {
   opacity: 0;
 }
@@ -86,7 +86,7 @@ body {
 .fade-in {
   opacity: 1;
 }
-
+ */
 
 
 .gradient-hero {
@@ -131,6 +131,27 @@ body {
 .animate-float {
   animation: float 8s ease-in-out infinite;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.transition-all {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 
 /* 
  buttons: #eef0f2

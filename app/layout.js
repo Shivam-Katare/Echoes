@@ -1,16 +1,10 @@
 import localFont from "next/font/local";
 import { Onest } from "next/font/google";
 import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton
+  ClerkProvider
 } from '@clerk/nextjs'
 import "./globals.css";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
+import Header from "@/components/header";
 
 const inter = Onest({ subsets: ["latin"] });
 
@@ -26,41 +20,7 @@ export default function RootLayout({ children }) {
         <body
           className={`${inter.className} bg-primary text-foreground`}
         >
-          <header className="px-4 relative z-10 lg:px-6 h-14 flex items-center" style={{
-            backgroundImage: "linear-gradient(to left bottom, #003049, #1b2338, #1d1724, #160d13, #000000);"
-          }}>
-            <Link className="flex items-center justify-center" href="/">
-              <Image
-                src=""
-                alt="Echoes Logo"
-                width={32}
-                height={32}
-                className="rounded-lg"
-              />
-              <span className="ml-2 text-2xl font-bold text-white">Echoes</span>
-            </Link>
-            <nav className="ml-auto flex gap-4 items-center sm:gap-6">
-              <Link href="/play/gallery">
-                <p className="text-[hsl(202,46%,72%)]">Gallery</p>
-              </Link>
-
-              <Link href="/play/leaderboard">
-                <p className="text-[#98c1d9]">Leaderboard</p>
-              </Link>
-
-              <Link href="/play/credits">
-                <p className="text-[#98c1d9] mr-8">Credits</p>
-              </Link>
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <Button variant="secondary" className="py-2 px-12 bg-[#eef0f2] text-black">Sign In</Button>
-                </SignInButton>
-              </SignedOut>
-              <SignedIn>
-                <UserButton />
-              </SignedIn>
-            </nav>
-          </header>
+          <Header />
           {children}
         </body>
       </html>

@@ -56,25 +56,24 @@ const WordsTypingArea = ({
                 textAlign: "center",
               }}
             >
-              <AnimatePresence>
+              <div className="flex items-center justify-center flex-wrap">
                 {displayWords.map((wordObj, index) => (
-                  <motion.span
+                  <span
                     key={wordObj.id}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{
-                      opacity: 0,
-                      scale: 0.8,
-                      backgroundColor: index === 0 ? (input === wordObj.word ? "green" : "red") : "black",
-                      transition: { duration: 0.5 },
-                    }}
-                    className={`mx-2 px-2 py-1 rounded ${index === 0 ? "bg-black" : "bg-gray-700"
-                      }`}
+                    className={`
+        mx-2 px-2 py-1 rounded
+        transition-all duration-500
+        ${index === 0 ? "bg-black" : "bg-gray-700"}
+        ${index === 0 && input === wordObj.word ? "bg-green-500" : ""}
+        ${index === 0 && input !== "" && input !== wordObj.word ? "bg-red-500" : ""}
+        animate-fadeIn
+      `}
                   >
                     {wordObj.word}
-                  </motion.span>
+                  </span>
                 ))}
-              </AnimatePresence>
+              </div>
+
             </div>
           </div>
         )}

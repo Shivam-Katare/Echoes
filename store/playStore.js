@@ -162,8 +162,8 @@ const usePlayStore = create((set) => ({
   },
 
   fetchParas: async () => {
-    const endpoint = "http://localhost:8686/graphql";
-    const key = "eyJhbGciOiJFUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NjMwMTMxMjEsImlhdCI6MTczMTQ3NzEyMSwiaXNzIjoiaHlwZXJtb2RlLmNvbSIsInN1YiI6ImFway0wMTkzMjQxNC0yYjIxLTczOTktOTM1Yy1lMDdjZWQ4YzNmMmUifQ.djDJi3yNN3l2qLfK3xiacvYIW7yd5sqtIxNajBdKNfyU5DCe2hzmFwpTxyP1_lzHSRx-8y5jWSv7W66iYVnQQg";
+    const endpoint = "https://echoes-shivam.hypermode.app/graphql";
+    const key = process.env.NEXT_PUBLIC_MODUS_ENV;
 
     const query = `
       query Words() {

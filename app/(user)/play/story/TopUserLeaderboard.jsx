@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 const TopUserLeaderboard = ({ isLoading, globalLeaderboard }) => {
   return (
-    <div className="overflow-x-auto shadow-md rounded-[12px] sm:w-full min-h-96">
+    <div className="flex flex-col justify-between items-center pb-2 overflow-x-auto shadow-md rounded-[12px] sm:w-full min-h-96">
       {isLoading ? (
         <LoadingSpinner />
       ) : (
@@ -19,7 +19,7 @@ const TopUserLeaderboard = ({ isLoading, globalLeaderboard }) => {
           </thead>
           <tbody>
             {globalLeaderboard && globalLeaderboard.map((history, index) => (
-              <tr key={history.id} className={`bg-white text-black border-b hover:bg-gray-50`}>
+              <tr key={history?.id} className={`bg-white text-black border-b hover:bg-gray-50`}>
                 <td className='px-6 py-4'>#{history?.rank}</td>
                 <td className="px-6 py-4 min-w-20">{history.userName || "--"}</td>
                 <td className="px-6 py-4 min-w-20 text-center">{history.total_score || "--"}</td>
@@ -28,7 +28,7 @@ const TopUserLeaderboard = ({ isLoading, globalLeaderboard }) => {
           </tbody>
         </table>
       )}
-      <Link href="/leaderboard">
+      <Link href="/play/leaderboard">
         <Button
           className="mt-4"
           onClick={() => console.log('Check complete leaderboard')}

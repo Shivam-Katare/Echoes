@@ -95,8 +95,6 @@ const SelectTypingCategoryDialog = ({ isOpen, onConfirm, isLoading, changeColor 
     setTime(selectedTime.time.split(' ')[0]); // Set only the numeric part of the time
   }
 
-  console.log(time);
-
   const handleConfirm = () => {
     onConfirm({ challangeType, time });
     changeColor();

@@ -108,7 +108,6 @@ const SentenceTyping = ({
                             className={color}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: index * 0.02 }}
                           >
                             {char}
                           </motion.span>
