@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-
+import { motion } from "framer-motion";
 const AnimatedParagraph = ({
   text,
   fullStopCount = 2, // Default to breaking after 2 full stops
-  delay = 2000, // Default delay of 2 seconds
-  className = "text-xl text-white leading-relaxed text-focus-in",
+  delay = 0, // Default delay of 2 seconds
+  className,
 }) => {
   const [visibleChunks, setVisibleChunks] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,11 +46,23 @@ const AnimatedParagraph = ({
   }, [currentIndex, chunks, delay]);
 
   return (
-    <div>
+    <div className="space-y-4">
       {visibleChunks.map((chunk, index) => (
-        <p key={index} className={className}>
-          {chunk}
-        </p>
+        <motion.p
+          key={index}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className={`${className} relative`}
+        >
+          <span className="relative z-10">{chunk}</span>
+          <motion.span
+            className="absolute bottom-0 left-0 w-full h-[1px] bg-white/10"
+            initial={{ scaleX: 0 }}
+            animate={{ scaleX: 1 }}
+            transition={{ duration: 0.8 }}
+          />
+        </motion.p>
       ))}
     </div>
   );

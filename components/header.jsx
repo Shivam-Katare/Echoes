@@ -21,7 +21,7 @@ export default function Header() {
     <header className='px relative z-50 lg:px-6 h-14' style={{
       backgroundImage: "linear-gradient(to left bottom, #003049, #1b2338, #1d1724, #160d13, #000000);"
     }}>
-      <nav aria-label="Global" className="mx-auto flex max-w-[90rem] items-center justify-between ">
+      <nav aria-label="Global" className="flex items-center justify-between ">
         <Link className="flex items-center justify-items-center" href="/">
           <Image
             src=""

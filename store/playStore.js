@@ -32,7 +32,7 @@ const usePlayStore = create((set) => ({
               id: 0, // Default ID
               created_at: new Date().toISOString(), // Default timestamp
               chapter_id: 1,
-              last_chunk_id: 1,
+              last_chunk_id: 0,
               user_id: userId || "", // Use provided userId or empty string
             },
           ],

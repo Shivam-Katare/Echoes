@@ -10,15 +10,18 @@ function StorylineManagerComponent ({ stories, currentIndex, onComplete, current
   const currentChunk = currentStory?.story_chunks?.[currentIndex];
   console.log("show kar bhai", currentChunk)
   const handleChunkComplete = () => {
-    const nextChunkIndex = currentIndex + 1;
-    const maxChunks = currentStory?.story_chunks?.length || 0;
+    const currentChunkIndex = currentStory.story_chunks.findIndex(
+      (storyChunk) => Number(storyChunk.chunk_id) === Number(currentChunk.chunk_id)
+    );
 
-    if (nextChunkIndex < maxChunks) {
-      onComplete(nextChunkIndex); // Pass the next chunk index to onComplete
+    if (currentChunkIndex < currentStory.story_chunks.length - 1) {
+      // If there is a next chunk, increment chunk_id normally
+      onComplete(currentIndex + 1);
     } else {
+      // If this is the last chunk, move to next chapter
       handleNextChapter();
     }
-  };
+  }
   if (!currentChunk) return (
     <>
     {console.log("No stories", currentChunk)}
@@ -43,7 +46,7 @@ function StorylineManagerComponent ({ stories, currentIndex, onComplete, current
           key={`typing-${currentChunk.chunk_id}`}
           className="min-h-screen flex items-center justify-center p-4"
         >
-          <TypingGame chunk={currentChunk} onComplete={handleChunkComplete} currentChapter={currentChapter} onNextChapter={onNextChapter} />
+          <TypingGame chapterStory={currentStory} chunk={currentChunk} onComplete={handleChunkComplete} currentChapter={currentChapter} onNextChapter={onNextChapter} />
         </motion.div>
       )}
     </AnimatePresence>

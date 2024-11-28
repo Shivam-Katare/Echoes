@@ -7,12 +7,12 @@ import { AnimatePresence, motion } from "motion/react"
 import { ChapterTitle } from './ChapterTitle';
 import { useUser } from '@clerk/nextjs';
 import { fetchUserStoryline } from '@/lib/storyManager';
-import {StorylineManager} from './StorylineManager';
+import { StorylineManager } from './StorylineManager';
 import LoadingStory from '@/components/loading-story';
 
 function Storyline() {
   const { session } = useSession();
-  const { fetchStory, gameData, isLoading, fetchCheckpoint, checkpoint } = usePlayStore();
+  const { fetchStory, gameData, isLoading, fetchCheckpoint, checkpoint, updateCheckpoint } = usePlayStore();
   const [showTitle, setShowTitle] = useState(true);
   const [currentChunkIndex, setCurrentChunkIndex] = useState(-1);
   const user = useUser().user;
@@ -27,6 +27,7 @@ function Storyline() {
   const handleTitleComplete = () => {
     setShowTitle(false);
     setCurrentChunkIndex(storylineData.lastChunkId || 0);
+    console.log("currentChunkIndex", storylineData.lastChunkId);
   };
 
   const handleNextChapter = () => {
@@ -34,16 +35,21 @@ function Storyline() {
     const nextChapterStories = gameData.filter(
       (story) => story.chapter_id === nextChapterId
     );
-  
+
     if (nextChapterStories.length > 0) {
       setStorylineData({
         currentChapter: nextChapterId,
-        lastChunkId: 1,
+        lastChunkId: 0,
         stories: nextChapterStories,
         currentChapterName: nextChapterStories[0].title,
       });
+      updateCheckpoint(session, user_id, {
+        chapter_id: nextChapterId,
+        last_chunk_id: 0,
+      })
+
       setShowTitle(true);
-      setCurrentChunkIndex(-1);
+      setCurrentChunkIndex(1);
     } else {
       setStorylineData({ ...storylineData, stories: [] });
     }
@@ -53,13 +59,15 @@ function Storyline() {
     const maxChunks = storylineData.stories[0]?.story_chunks?.length || 0;
     if (nextChunkIndex < maxChunks) {
       setCurrentChunkIndex(nextChunkIndex);
+      console.log("KYA YE RUN HO RAHA HAI?", nextChunkIndex);
     } else {
       handleNextChapter();
+      console.log("YA FIR ELSE?", nextChunkIndex);
     }
   };
-  
 
-  
+
+
   useEffect(() => {
     let isMounted = true;
 
@@ -105,18 +113,20 @@ function Storyline() {
     console.log("aree bhai", checkpoint);
     console.log('Processing storyline data...');
     const storylineResult = fetchUserStoryline(checkpoint, gameData);
-
+    console.log("storylineResult", storylineResult);
+    
     if (storylineResult.error) {
       console.error('Error processing storyline:', storylineResult.error);
     }
 
     if(storylineResult) {
+      // Do any operations with storylineResult here
+      console.log("storylineResult for chunks:", storylineResult);
+      
       setStorylineData(storylineResult);
-    setCurrentChunkIndex(storylineResult.lastChunkId || 0);
-    console.log("storylineData chunk ke liye", storylineData);
+      setCurrentChunkIndex(storylineResult?.lastChunkId || 0);
     }
-    
-  }, [gameData, checkpoint]);
+}, [gameData, checkpoint]);
 
   const currentChunk = !showTitle && storylineData.stories[0]?.story_chunks?.[currentChunkIndex];
 
@@ -134,14 +144,11 @@ function Storyline() {
 
   return (
     <div
-      className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden bg-gray-700"
-    // style={{
-    //   backgroundImage: 'url(https://images.unsplash.com/photo-1478760329108-5c3ed9d495a0?auto=format&fit=crop&q=80)',
-    // }}
+      className="bg-cover bg-center bg-no-repeat relative overflow-hidden"
     >
       {/* Dynamic background overlay */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-br from-purple-900/50 to-black/70"
+        className="absolute inset-0 gradient-hero-5"
         animate={{
           opacity: [0.5, 0.7, 0.5],
         }}

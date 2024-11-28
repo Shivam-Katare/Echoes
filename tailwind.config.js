@@ -58,10 +58,15 @@ module.exports = {
 			scale: {
 				'102': '1.02'
 			},
+			backdropFilter: {
+				'none': 'none',
+				'blur': 'blur(20px)'
+			}
   	}
   },
   plugins: [
 		require("tailwindcss-animate"),
     require('@tailwindcss/forms'),
+		require('@tailwindcss/typography'),
 	],
 };
