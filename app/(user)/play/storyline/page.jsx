@@ -131,7 +131,7 @@ function Storyline() {
   const currentChunk = !showTitle && storylineData.stories[0]?.story_chunks?.[currentChunkIndex];
 
   if (isLoading || !gameData?.length || !checkpoint?.length) {
-    return <LoadingStory />
+    return <LoadingStory textToShow = {"Loading stories..."} />
   }
 
   if (!storylineData.stories.length) {

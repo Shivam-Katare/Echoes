@@ -93,6 +93,16 @@ const SelectTypingCategoryDialog = ({ isOpen, onConfirm, isLoading, changeColor 
   const handleTimeChange = (timeId) => {
     const selectedTime = challangeType === 'words' ? wordsTimes.find(t => t.id === timeId) : paragraphsTimes.find(t => t.id === timeId);
     setTime(selectedTime.time.split(' ')[0]); // Set only the numeric part of the time
+    if(selectedTime ) {
+      if(selectedTime.time.split(' ')[0] === '15') {
+        setDifficulty('hard');
+      } else if(selectedTime.time.split(' ')[0] === '30') {
+        setDifficulty('medium');
+      }
+      else {
+        setDifficulty('easy');
+      }
+    }
   }
 
   const handleConfirm = () => {
@@ -102,29 +112,29 @@ const SelectTypingCategoryDialog = ({ isOpen, onConfirm, isLoading, changeColor 
 
   return (
     <Dialog open={isOpen}>
-      <DialogContent className="sm:max-w-[40rem] gradient-hero-5 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <DialogContent className="sm:max-w-[40rem] gradient-hero-4 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <DialogHeader className="relative">
           <div className="flex flex-col items-center space-y-4">
             <div className="relative">
               <div className="absolute -top-1 -right-1">
                 <Trophy className="h-6 w-6 text-red-500 animate-pulse" />
               </div>
-              <Keyboard className="h-16 w-16 text-primary-foreground" />
+              <Keyboard className="h-16 w-16 text-black" />
             </div>
-            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-primary-foreground">
+            <DialogTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-black">
               Choose Your Challenge
             </DialogTitle>
           </div>
         </DialogHeader>
 
-        <Tabs defaultValue="words" className="w-full" onValueChange={handleTabChange}>
+        <Tabs defaultValue={challangeType} className="w-full" onValueChange={handleTabChange}>
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="words">Words</TabsTrigger>
             <TabsTrigger value="paragraphs">Paragraphs</TabsTrigger>
           </TabsList>
           <TabsContent value="words">
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium leading-none">Select Time</h3>
+            <div className="space-y-4 mt-8">
+              <h3 className="text-sm font-medium leading-none mt-8">Select Time</h3>
               <RadioGroup
                 className="flex gap-4"
                 value={time}
@@ -153,8 +163,8 @@ const SelectTypingCategoryDialog = ({ isOpen, onConfirm, isLoading, changeColor 
             </div>
           </TabsContent>
           <TabsContent value="paragraphs">
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium leading-none">Select Time</h3>
+            <div className="space-y-4 mt-8">
+              <h3 className="text-sm font-medium leading-none mt-8">Select Time</h3>
               <RadioGroup
                 className="flex gap-4"
                 value={time}

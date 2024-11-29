@@ -18,15 +18,15 @@ function Leaderboard() {
     session && fetchGlobalLeaderboard(session);
   }, [session, fetchGlobalLeaderboard])
   return (
-    <>
+    <div className='min-h-screen gradient-hero-4'>
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6 md:mb-8 text-center px-4"
+        className="mb-6 md:mb-8 text-center px-4 gradient-hero-4"
       >
         <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-2 md:gap-3">
           <Trophy className="w-6 h-6 md:w-8 md:h-8 text-yellow-500" />
-          Echoes Leaderboard
+          Leaderboard
         </h1>
         <p className="text-sm md:text-base text-gray-600">Compete with the best typists worldwide</p>
       </motion.div>
@@ -47,7 +47,7 @@ function Leaderboard() {
           <LeaderboardTable data={globalLeaderboard} />
         )
       }
-    </>
+    </div>
   )
 }
 

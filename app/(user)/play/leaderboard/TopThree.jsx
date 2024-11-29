@@ -5,6 +5,29 @@ import { Crown, Medal } from 'lucide-react';
 function TopThree({ data }) {
 
   const topThree = data.sort((a, b) => a.rank - b.rank).slice(0, 3);
+
+  const getRankStyle = (rank) => {
+    switch(rank) {
+      case 1:
+        return 'bg-gradient-to-br from-yellow-100 via-yellow-50 to-yellow-100 ring-2 ring-yellow-500';
+      case 2:
+        return 'bg-gradient-to-br from-gray-200 via-gray-100 to-gray-200 ring-2 ring-gray-400';
+      case 3:
+        return 'bg-gradient-to-br from-[#cd7f32] via-[#e8ac7e] to-[#cd7f32] ring-2 ring-[#cd7f32]';
+      default:
+        return '';
+    }
+  };
+
+  const getOrder = (rank) => {
+    switch(rank) {
+      case 1: return 'sm:order-2'; // Center
+      case 2: return 'sm:order-1'; // Left
+      case 3: return 'sm:order-3'; // Right
+      default: return '';
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -14,14 +37,12 @@ function TopThree({ data }) {
       {topThree.map((player, index) => (
         <motion.div
           key={player?.user_id}
-          className={`relative ${player?.rank === 1 ? 'sm:order-2' : ''}`}
+          className={`relative ${getOrder(player?.rank)}`}
           whileHover={{ y: -5 }}
         >
           <div className={`
             p-4 md:p-6 rounded-xl text-center
-            ${player?.rank === 1
-              ? 'bg-gradient-to-br from-yellow-100 via-yellow-50 to-yellow-100 ring-2 ring-yellow-500'
-              : 'bg-gradient-to-br from-[#8d99ae] via-[#d2dce2] to-[#edf2f4]'}
+            ${getRankStyle(player?.rank)}
             shadow-lg backdrop-blur-sm
             before:absolute before:inset-0 before:bg-white/40 before:z-0
             hover:transform hover:scale-102 transition-all duration-300
@@ -36,15 +57,15 @@ function TopThree({ data }) {
                   <Crown className="w-8 h-8 md:w-10 md:h-10 text-yellow-500 animate-bounce" />
                   <div className="absolute inset-0 w-8 h-8 md:w-10 md:h-10 bg-yellow-500 blur-lg opacity-40"></div>
                 </div>
-
               ) : (
                 <div className="relative">
-                  <Medal className="w-6 h-6 md:w-8 md:h-8 text-gray-100" />
+                  <Medal className={`w-6 h-6 md:w-8 md:h-8 ${player?.rank === 2 ? 'text-gray-300' : 'text-[#cd7f32]'}`} />
                   <div className="absolute inset-0 w-6 h-6 md:w-8 md:h-8 bg-white blur-lg opacity-30"></div>
-                </div>)}
+                </div>
+              )}
             </div>
 
-            <div className="mt-4 relative z-10">
+             <div className="mt-4 relative z-10">
               <div className="relative">
                 <img
                   src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=60&h=60&fit=crop"
@@ -56,7 +77,7 @@ function TopThree({ data }) {
                 )}
               </div>
               <h3 className="font-bold text-base md:text-lg text-gray-800">{player?.userName || 'Anonymous'}</h3>
-              <p className="text-gray-700 text-xs md:text-sm font-semibold">{player?.total_wpm || "N/A"} WPM</p>
+              <p className="text-gray-700 text-xs md:text-sm font-semibold">{player?.highest_wpm || "N/A"} WPM</p>
               <p className="text-gray-700 text-xs md:text-sm">{player?.avg_accuracy ? `${player?.avg_accuracy?.toFixed(2)}% Accuracy` : 'N/A'}</p>
             </div>
           </div>

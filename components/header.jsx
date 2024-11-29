@@ -9,7 +9,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { Button } from './ui/button'
 
 const navigation = [
-  { name: 'Gallery', href: '#' },
+  { name: 'Gallery', href: '/play/gallery' },
   { name: 'Leaderboard', href: '/play/leaderboard' },
   { name: 'Credits', href: '#' },
 ]

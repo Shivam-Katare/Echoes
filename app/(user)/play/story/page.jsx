@@ -17,6 +17,16 @@ import WordsTypingArea from "./WordsTypingArea";
 import TopUserLeaderboard from "./TopUserLeaderboard";
 import SentenceTyping from "./SentenceTyping";
 import { getRandomWords } from './utils';
+import { Howl } from 'howler';
+
+const correctSound = new Howl({
+  src: ['/audio/correct.mp3']
+});
+
+const incorrectSound = new Howl({
+  src: ['/audio/incorrect.mp3']
+});
+
 
 function Story() {
   const [input, setInput] = useState("");
@@ -54,7 +64,6 @@ function Story() {
   // States for SentenceTyping
   const [text, setText] = useState('');
   const [currentText, setCurrentText] = useState('');
-  const [currentPara, setCurrentPara] = useState('');
 
   const handleStartGame = () => {
     setShowCountdown(true);
@@ -92,7 +101,6 @@ function Story() {
     setIsGameActive(false);
     setText('');
     setCurrentText('');
-    setCurrentPara('');
     if (challangeType === 'paragraphs') {
         fetchParas();
     } else {
@@ -113,8 +121,10 @@ function Story() {
 
         // Update scores immediately to prevent race conditions
         if (isCorrect) {
+            correctSound.play();
             setCorrectCount((prev) => prev + 1);
         } else {
+            incorrectSound.play();
             setIncorrectCount((prev) => prev + 1);
         }
 
@@ -162,44 +172,91 @@ function Story() {
 };
 
 
-  const handleSentenceInput = (e) => {
-    const value = e.target.value;
+//   const handleSentenceInput = (e) => {
+//     const value = e.target.value;
 
-    // Only allow typing up to the first incorrect character
-    let newValue = '';
-    let i = 0;
+//     // Only allow typing up to the first incorrect character
+//     let newValue = '';
+//     let i = 0;
 
-    // Check each character until we find a mismatch or reach the end
-    while (i < value.length && i < text.length) {
-      if (value[i] === text[i]) {
-        newValue += value[i];
-        i++;
-      } else {
-        // If character is incorrect, only keep up to this point
-        // and increment incorrect count
-        setIncorrectCount(prev => prev + 1);
-        break;
+//     // Check each character until we find a mismatch or reach the end
+//     while (i < value.length && i < text.length) {
+//       if (value[i] === text[i]) {
+//          correctSound.play();
+//         newValue += value[i];
+//         i++;
+//       } else {
+//         // If character is incorrect, only keep up to this point
+//         // and increment incorrect count
+//         incorrectSound.play();
+//         setIncorrectCount(prev => prev + 1);
+//         break;
+//       }
+//     }
+
+//     setCurrentText(newValue);
+//     setCorrectCount(newValue.length); // Correct count is the length of matching characters
+
+//     // Check if the sentence is completed correctly
+//     if (newValue === text) {
+//         // Generate new sentence
+//         let newText;
+//         do {
+//           newText = paras[Math.floor(Math.random() * paras.length)].para;
+//         } while (newText === text);
+
+//         // Set the new sentence and reset the states
+//         setText(newText);
+//         setCurrentText('');
+//         setCorrectCount(0);
+//         setIncorrectCount(0);
+//     }
+// };
+
+const handleSentenceInput = (e) => {
+  const value = e.target.value;
+  let newValue = value;
+  
+  // Compare the current input with the target text
+  for (let i = 0; i < value.length; i++) {
+      // Play sound only when a new character is typed
+      if (i === value.length - 1) {
+          if (value[i] === text[i]) {
+              correctSound.play();
+          } else {
+              incorrectSound.play();
+              setIncorrectCount(prev => prev + 1);
+          }
       }
-    }
+  }
 
-    setCurrentText(newValue);
-    setCorrectCount(newValue.length); // Correct count is the length of matching characters
+  setCurrentText(newValue);
+  
+  // Count correct characters
+  let correctChars = 0;
+  for (let i = 0; i < newValue.length; i++) {
+      if (newValue[i] === text[i]) {
+          correctChars++;
+      }
+  }
+  setCorrectCount(correctChars);
 
-    // Check if the sentence is completed correctly
-    if (newValue === text) {
-        // Generate new sentence
-        let newText;
-        do {
+  // Check if the sentence is completed
+  if (newValue === text) {
+      // Generate new sentence
+      let newText;
+      do {
           newText = paras[Math.floor(Math.random() * paras.length)].para;
-        } while (newText === text);
+      } while (newText === text);
 
-        // Set the new sentence and reset the states
-        setText(newText);
-        setCurrentText('');
-        setCorrectCount(0);
-        setIncorrectCount(0);
-    }
+      // Set the new sentence and reset the states
+      setText(newText);
+      setCurrentText('');
+      setCorrectCount(0);
+      setIncorrectCount(0);
+  }
 };
+
 
   const handleChangeColor = () => {
     if (category?.name) {
@@ -253,7 +310,7 @@ function Story() {
 
   useEffect(() => {
     if (showCountdown && countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
+      const timer = setTimeout(() => setCountdown(countdown - 1), 1500);
       return () => clearTimeout(timer);
     }
     if (countdown === 0) {
@@ -405,7 +462,7 @@ function Story() {
       <TimesUpDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        playData={{ typedWords: correctCount + incorrectCount, time: timer }}
+        playData={{ typedWords: correctCount + incorrectCount, time: timer, correctCount, incorrectCount }}
         restartGame={handleRestart}
         isLoading={false}
       />

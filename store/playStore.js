@@ -6,6 +6,7 @@ const usePlayStore = create((set) => ({
   paras: [],
   gameData: [],
   checkpoint: [],
+  galleryImages: [],
   isLoading: false,
 
   fetchCheckpoint: async (session, userId) => {
@@ -50,7 +51,7 @@ const usePlayStore = create((set) => ({
               id: 0, // Default ID
               created_at: new Date().toISOString(), // Default timestamp
               chapter_id: 1,
-              last_chunk_id: 1,
+              last_chunk_id: 0,
               user_id: userId || "", // Use provided userId or empty string
             },
           ],
@@ -64,7 +65,7 @@ const usePlayStore = create((set) => ({
             id: 0, // Default ID
             created_at: new Date().toISOString(), // Default timestamp
             chapter_id: 1,
-            last_chunk_id: 1,
+            last_chunk_id: 0,
             user_id: userId || "", // Use provided userId or empty string
           },
         ],
@@ -109,9 +110,8 @@ const usePlayStore = create((set) => ({
         const { error: insertError } = await supabase
           .from('user_checkpoint')
           .insert({
-            chapter_id: currentChapter + 1,
+            ...checkpointData,
             user_id: userId,
-            last_chunk_id: 1,
           });
   
         if (insertError) {
@@ -222,7 +222,64 @@ const usePlayStore = create((set) => ({
 
       set({ gameData: [], isLoading: false });
     }
+  },
+
+  // fetch galley according to the user checkpoint
+
+  fetchGallery: async (session, userId) => {
+    if (!session) {
+      console.error('Session is required to fetch stories');
+      return;
+    }
+
+    const supabase = createClerkSupabaseClient(session);
+    set({ isLoading: true });
+
+    try {
+      // First, fetch user's checkpoint data
+      const { data: checkpointData, error: checkpointError } = await supabase
+        .from('user_checkpoint')
+        .select('*')
+        .eq('user_id', userId)
+        .order('chapter_id', { ascending: true });
+
+      if (checkpointError) {
+        console.error('Error fetching checkpoint:', checkpointError);
+        set({ galleryImages: [], isLoading: false });
+        return;
+      }
+
+      // Fetch all gallery images
+      const { data: allImages, error: galleryError } = await supabase
+        .from("gallery_images")
+        .select("*")
+        .order("created_at", { ascending: true });
+
+      if (galleryError) {
+        console.error('Error fetching gallery:', galleryError);
+        set({ galleryImages: [], isLoading: false });
+        return;
+      }
+
+      // Filter images based on checkpoint progress
+      const filteredImages = allImages.filter(image => {
+        // Find the corresponding checkpoint for this image's chapter
+        const checkpoint = checkpointData.find(cp => cp.chapter_id === image.chapter_id);
+        
+        if (checkpoint) {
+          // Include the image if its unlock_chunk_id is less than or equal to the user's progress
+          return image.unlock_chunk_id <= checkpoint.last_chunk_id;
+        }
+        return false; // Exclude images from chapters the user hasn't reached
+      });
+
+      set({ galleryImages: filteredImages, isLoading: false });
+    } catch (error) {
+      console.error('Unexpected error fetching gallery:', error);
+      set({ galleryImages: [], isLoading: false });
+    }
   }
+
 }));
 
 export default usePlayStore;

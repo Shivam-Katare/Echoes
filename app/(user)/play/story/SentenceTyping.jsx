@@ -73,15 +73,10 @@ const SentenceTyping = ({
               {showCountdown && (
                 <div
                   key="countdown"
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.5, opacity: 0 }}
                   className="text-center"
                 >
                   <p
                     className="text-7xl font-bold text-white text-shadow"
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 1, repeat: Infinity }}
                   >
                     {countdown}
                   </p>

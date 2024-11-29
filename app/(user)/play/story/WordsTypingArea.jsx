@@ -35,14 +35,12 @@ const WordsTypingArea = ({
           </motion.button>
         )}
         {showCountdown && (
-          <AnimatePresence>
-            <motion.div
+            <div
               key={countdown}
               className="text-[64px] font-bold mt-8 text-black"
             >
               {countdown}
-            </motion.div>
-          </AnimatePresence>
+            </div>
         )}
         {isGameActive && (
           <div
