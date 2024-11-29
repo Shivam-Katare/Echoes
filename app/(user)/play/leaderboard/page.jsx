@@ -1,11 +1,10 @@
 "use client";
-import React, { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
 import FilterBar from './Filterbar';
 import TopThree from './TopThree';
 import LeaderboardTable from './LeaderboardTable';
-import { mockLeaderboardData } from '@/lib/utils';
 import useLeaderboardStore from '@/store/leaderboardStore';
 import { useSession } from '@clerk/nextjs';
 import LoadingSpinner from '@/components/loading-spinner';
@@ -31,20 +30,16 @@ function Leaderboard() {
         <p className="text-sm md:text-base text-gray-600">Compete with the best typists worldwide</p>
       </motion.div>
 
-      <FilterBar onFilterChange={() => { }} />
+      {/* <FilterBar onFilterChange={() => { }} /> */}
 
       {
-        isLoading ? (
-          <LoadingSpinner />
+        isLoading || !globalLeaderboard ? (
+          <h1 className='text-center text-yellow-500 font-bold text-[35px]'>Loading Players...</h1>
         ) : (
-          <TopThree data={globalLeaderboard} />
-        )
-      }
-      {
-        isLoading ? (
-          <LoadingSpinner />
-        ) : (
-          <LeaderboardTable data={globalLeaderboard} />
+          <>
+            <TopThree data={globalLeaderboard} />
+            <LeaderboardTable data={globalLeaderboard} />
+          </>
         )
       }
     </div>

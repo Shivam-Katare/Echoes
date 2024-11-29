@@ -24,11 +24,12 @@ export default function Hero() {
             <div className="mx-auto max-w-2xl gap-x-14 lg:mx-0 lg:flex lg:max-w-none lg:items-center">
               <div className="relative w-full lg:max-w-xl lg:shrink-0 xl:max-w-2xl">
                 <h1 className={`${playfair.className} text-pretty text-5xl font-semibold tracking-tight text-[hsl(197,24%,94%)] sm:text-7xl`}>
-                  A tale of <span className="blur-out">few</span> words
+                  Story of, Ava
                 </h1>
 
                 <p className="mt-8 text-pretty text-lg font-medium text-gray-500 sm:max-w-md sm:text-xl/8 lg:max-w-none">
-                  Embark on an emotional journey through memories in Story Mode or test your speed and claim the leaderboard crown in Free Mode. Choose your way!
+                  Embark on an emotional journey through memories in Story Mode. Explore the world of Ava and uncover her past through the power of words. 
+                  {/*  or test your speed and claim the leaderboard crown in Free Mode. Choose your way! */}
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <SignedOut>
@@ -48,8 +49,8 @@ export default function Hero() {
                 <div className="ml-auto w-44 flex-none space-y-8 pt-32 sm:ml-0 sm:pt-80 lg:order-last lg:pt-36 xl:order-none xl:pt-80">
                   <div className="relative">
                     <img
-                      alt=""
-                      src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/game-img/char-one.jpg"
+                      alt="chracter image"
+                      src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/scenes-img/char1.jpg"
                       className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                     />
                     <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />
@@ -85,7 +86,7 @@ export default function Hero() {
                   <div className="relative">
                     <img
                       alt=""
-                      src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/game-img/char-eight.jfif"
+                      src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/scenes-img/char4.jpg"
                       className="aspect-[2/3] w-full rounded-xl bg-gray-900/5 object-cover shadow-lg"
                     />
                     <div className="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10" />

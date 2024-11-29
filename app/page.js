@@ -11,6 +11,9 @@ import Hero from '@/components/hero';
 import SectionTwo from '@/components/sections/section-two';
 import SectionOne from '@/components/sections/section-one';
 import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
+import SectionFour from '@/components/sections/section-four';
+import SectionThree from '@/components/sections/section-three';
+import SectionFive from '@/components/sections/section-five';
 
 
 export default function LandingPage() {
@@ -42,18 +45,21 @@ export default function LandingPage() {
 
           <div>
             <main className="flex-1">
+              <SectionFour />
               <Hero />
               <SectionOne />
+              <SectionThree />
+              <SectionFive />
               <SectionTwo />
               <section id="how-it-works" className="w-full py-12 gradient-hero-5 md:py-24 lg:py-32">
                 <div className="container px-4 md:px-6">
                   <h2 className="text-white text-3xl font-bold tracking-tighter sm:text-5xl text-center mb-12">How It Works</h2>
                   <div className="grid gap-6 lg:grid-cols-4">
                     {[
-                      { title: "Choose Your Mode", description: "Log in for the story or play as a guest." },
+                      { title: "Choose Your Mode", description: "Log in and play storyline or free type mode." },
                       { title: "Type to Win", description: "Defeat challenges with your typing skills." },
                       { title: "Progress & Unlock", description: "Level up and reveal memories in story mode." },
-                      { title: "Climb the Ranks", description: "Track your progress on the leaderboard." }
+                      { title: "Climb the Ranks", description: "Play free mode and climb on the leaderboard." }
                     ].map((step, index) => (
                       <div key={index} className="flex flex-col items-center text-center">
                         <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-200 text-black font-bold text-xl mb-4">

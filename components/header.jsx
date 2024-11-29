@@ -9,6 +9,8 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs'
 import { Button } from './ui/button'
 
 const navigation = [
+  { name: 'StoryMode', href: '/play' },
+  { name: 'Free Type', href: '/play/story' },
   { name: 'Gallery', href: '/play/gallery' },
   { name: 'Leaderboard', href: '/play/leaderboard' },
   { name: 'Credits', href: '#' },
@@ -18,13 +20,13 @@ export default function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   return (
-    <header className='px relative z-50 lg:px-6 h-14' style={{
+    <header className='px relative z-[1000] lg:px-6 h-14' style={{
       backgroundImage: "linear-gradient(to left bottom, #003049, #1b2338, #1d1724, #160d13, #000000);"
     }}>
-      <nav aria-label="Global" className="flex items-center justify-between ">
+      <nav aria-label="Global" className="flex items-center justify-between h-[inherit]">
         <Link className="flex items-center justify-items-center" href="/">
           <Image
-            src=""
+            src="/logoBlack.png"
             alt="Echoes Logo"
             width={32}
             height={32}
@@ -42,11 +44,15 @@ export default function Header() {
             <Menu aria-hidden="true" className="size-6" />
           </button>
         </div>
-        <div className="hidden lg:flex lg:gap-x-12">
+        <div className="hidden lg:flex lg:gap-x-12 lg:items-center">
           {navigation.map((item) => (
-            <Link key={item.name} href={item.href} className="text-sm/6 font-semibold text-[#97c0d8]">
+            <>
+            {console.log(item)}
+               <Link key={item.name} href={item.href} className="text-sm/6 font-semibold text-[#97c0d8]">
               {item.name}
             </Link>
+            </>
+          
           ))}
           <SignedOut>
             <SignInButton mode="modal">

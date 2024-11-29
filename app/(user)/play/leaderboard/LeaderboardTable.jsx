@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, RefreshCw, Target } from "lucide-react";
 import { difficultyColors } from "@/lib/utils";
@@ -12,28 +12,30 @@ function LeaderboardTable({ data, onRefresh }) {
   const [paginatedData, setPaginatedData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
 
-  const tableData = data?.filter(entry => entry.rank > 3);
+  const tableData = useMemo(() => {
+    return data?.filter(entry => entry.rank > 3) || [];
+  }, [data]);
 
-  useEffect(() => {
-    const total = Math.ceil(tableData.length / itemsPerPage);
-    setTotalPages(total);
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = tableData.slice(indexOfFirstItem, indexOfLastItem);
+// Replace both useEffect hooks with this single one
+useEffect(() => {
+  // Return early if no data
+  if (!data) return;
+  
+  // Filter data for table display
+  const filteredData = data.filter(entry => entry.rank > 3);
+  
+  // Calculate pagination
+  const total = Math.ceil(filteredData.length / itemsPerPage);
+  setTotalPages(total);
+  
+  // Calculate current page items
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+  
+  setPaginatedData(currentItems);
+}, [data, currentPage, itemsPerPage]);
 
-    setPaginatedData(currentItems);
-  }, [tableData, currentPage, itemsPerPage]);
-
-  useEffect(() => {
-    const total = Math.ceil(data.length / itemsPerPage);
-    setTotalPages(total);
-    // Get current items
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = data.slice(indexOfFirstItem, indexOfLastItem);
-
-    setPaginatedData(currentItems);
-  }, [data, currentPage, itemsPerPage]);
 
   // pagination handlers
   const handlePrevious = () => {
@@ -53,7 +55,7 @@ function LeaderboardTable({ data, onRefresh }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="rounded-xl shadow-lg overflow-hidden mx-4 bg-gradient-to-br from-[#003049]/90 via-[#1b2338]/90 to-[#160d13]/90 backdrop-blur-sm"
+      className="rounded-xl shadow-lg overflow-hidden mx-4 bg-gradient-to-br from-[#8d99ae]/90 via-[#d2dce2]/90 to-[#edf2f4]/90 backdrop-blur-sm"
     >
       <div className="flex justify-between items-center p-4 border-b border-gray-200/30">
         <h2 className="text-gray-800 font-semibold">Leaderboard Rankings</h2>

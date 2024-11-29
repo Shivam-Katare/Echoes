@@ -116,6 +116,10 @@ body {
   background-image: linear-gradient(to left top, #003049, #1b2338, #1d1724, #160d13, #000000);
 }
 
+.gradient-hero-6 {
+  background-image: linear-gradient(to right top, #000000, #130b10, #1b141d, #1f1c2c, #1b263b);
+}
+
 
 .caveat-gallery-1 {
   font-family: "Caveat", cursive;

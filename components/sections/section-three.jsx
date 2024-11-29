@@ -1,43 +1,34 @@
 import { playfair } from "@/app/(user)/layout";
 import React from "react";
 
-export default function SectionTwo() {
+export default function SectionThree() {
   return(
-    <div className="overflow-hidden bg-white py-24 sm:py-32">
-      <div className="mx-auto max-w-7xl md:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:grid-cols-2 lg:items-start">
-          <div className="px-6 lg:px-0 lg:pr-4 lg:pt-4">
-            <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-lg">
-              <h2 className="text-base/7 font-semibold text-indigo-600">Deploy faster</h2>
-              <p className={`${playfair.className} mt-2 text-pretty text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl`}>
-                Or Play with engaging storyline.
-              </p>
-              <p className="mt-6 text-lg/8 text-gray-600">
-              Challenge your speed and accuracy in fast-paced typing battles. Type fast and be top of the leaderboad.
-              </p>
-            </div>
+    <div className="relative isolate -z-10 overflow-hidden gradient-hero-5 pt-14">
+      <div
+        aria-hidden="true"
+        className="absolute inset-y-0 right-1/2 -z-10 -mr-96 w-[200%] origin-top-right skew-x-[-30deg] gradient-hero-5 shadow-xl shadow-indigo-600/10 ring-1 ring-indigo-50 sm:-mr-80 lg:-mr-96"
+      />
+      <div className="mx-auto max-w-7xl px-6 py-32 sm:py-40 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:mx-0 lg:grid lg:max-w-none lg:grid-cols-2 lg:gap-x-16 lg:gap-y-8 xl:grid-cols-1 xl:grid-rows-1 xl:gap-x-8">
+          <h1 className="max-w-2xl text-balance text-5xl font-semibold tracking-tight text-white sm:text-7xl lg:col-span-2 xl:col-auto">
+            Feel the Realistic Voices
+          </h1>
+           <img
+            alt=""
+            src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/scenes-img/Hashnode%20Covers%20(1).png"
+            className="mt-10 aspect-[3/0] w-full max-w-lg rounded-2xl object-cover sm:mt-16 lg:mt-0 lg:max-w-none xl:row-span-2 xl:row-end-2 xl:mt-36"
+          />
+          <div className="mt-6 max-w-xl lg:mt-0 xl:col-end-1 xl:row-start-1">
+            <p className="text-pretty text-lg font-medium text-gray-500 sm:text-xl/8">
+            Go through the story of Ava and feel the realistic voices of the characters.
+            <br /> <br />
+
+            <span>
+             With image visuals, realistic voices, and stunning storyline, bind yourself to the story of Ava.
+            </span>
+            </p>
           </div>
-          <div className="sm:px-6 lg:px-0">
-            <div className="relative isolate overflow-hidden bg-indigo-500 px-6 pt-8 sm:mx-auto sm:max-w-2xl sm:rounded-3xl sm:pl-16 sm:pr-0 sm:pt-16 lg:mx-0 lg:max-w-none">
-              <div
-                aria-hidden="true"
-                className="absolute -inset-y-px -left-3 -z-10 w-full origin-bottom-left skew-x-[-30deg] bg-indigo-100 opacity-20 ring-1 ring-inset ring-white"
-              />
-              <div className="mx-auto max-w-2xl sm:mx-0 sm:max-w-none">
-                <img
-                  alt="Product screenshot"
-                  src="https://tailwindui.com/plus/img/component-images/project-app-screenshot.png"
-                  width={2432}
-                  height={1442}
-                  className="-mb-12 w-[57rem] max-w-none rounded-tl-xl bg-gray-800 ring-1 ring-white/10"
-                />
-              </div>
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-black/10 sm:rounded-3xl"
-              />
-            </div>
-          </div>
+         
         </div>
       </div>
     </div>

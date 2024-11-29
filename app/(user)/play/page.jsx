@@ -4,8 +4,10 @@ import React, { useEffect, useState } from 'react';
 import { Howl } from 'howler';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Volume2, VolumeOff } from 'lucide-react';
+import { GitCompareIcon, Github, Info, Newspaper, VideoIcon, Volume2, VolumeOff, XCircle } from 'lucide-react';
 import { useUser } from '@clerk/nextjs';
+import { BackgroundParticles } from '@/components/background-particles';
+import Image from 'next/image';
 
 function Play() {
   const [isPlaying, setIsPlaying] = useState(true);
@@ -44,38 +46,76 @@ function Play() {
   };
 
   return (
-    <div className="h-screen flex flex-col items-center gradient-hero-4 text-white relative overflow-hidden">
+    <div className="min-h-screen flex flex-col items-center text-white relative overflow-hidden">
+      <div className="absolute inset-0">
+        <Image
+          src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/scenes-img/Hashnode%20Covers%20(3).png"
+          alt="poster"
+          fill
+          priority
+          className="object-cover"
+          quality={100}
+        />
+        <div className="absolute inset-0 bg-black/30" />
+      </div>
       {/* Music Toggle Button */}
-      <button
-        onClick={togglePlay}
-        className="absolute top-4 right-4 p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
-        title={isPlaying ? 'Pause Music' : 'Play Music'}
-      >
-        {isPlaying ? (
-          <Volume2 size={24} className="text-white" />
-        ) : (
-          <VolumeOff size={24} className="text-white" />
-        )}
-      </button>
+      <div className='absolute top-4 right-4 p-2 flex items-center flex-row gap-x-5 md:flex-col md:gap-y-5 z-50'>
 
-      {/* Memory Orbs */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
-        {[...Array(25)].map((_, index) => (
-          <div
-            key={index}
-            className={`absolute w-16 h-16 rounded-full bg-gradient-to-r from-[#f7e7e7] to-[#dc8888] blur-lg opacity-40 animate-floating`}
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDuration: `${Math.random() * 8 + 4}s`,
-              animationDelay: `${Math.random() * 5}s`,
-            }}
-          ></div>
-        ))}
+        <button
+          onClick={togglePlay}
+          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition z-50"
+          title={isPlaying ? 'Pause Music' : 'Play Music'}
+        >
+          {isPlaying ? (
+            <Volume2 size={24} className="text-white" />
+          ) : (
+            <VolumeOff size={24} className="text-white" />
+          )}
+        </button>
+
+        <Link
+          href="https://github.com/your-repo-link"
+          target="_blank"
+          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
+        >
+          <GitCompareIcon size={24} className="text-white" />
+        </Link>
+
+        <Link
+          href="https://twitter.com/your-profile"
+          target="_blank"
+          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
+        >
+          <XCircle size={24} className="text-white" />
+        </Link>
+
+        <Link
+          href="/blog"
+          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
+        >
+          <Newspaper size={24} className="text-white" />
+        </Link>
+
+        <Link
+          href="/trailer"
+          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
+        >
+          <VideoIcon size={24} className="text-white" />
+        </Link>
+
+        <Link
+          href="/notes"
+          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
+        >
+          <Info size={24} className="text-white" />
+        </Link>
       </div>
 
+      {/* Memory Orbs */}
+      <BackgroundParticles />
+
       {/* Hero Section */}
-      <div className="text-center mt-6">
+      <div className="text-center mt-40 md:mt-6">
         <p className="text-[38px] font-[100] animate-fadeIn">
           Welcome, {username}
         </p>
@@ -87,18 +127,9 @@ function Play() {
         </p>
       </div>
 
-      <div className="absolute inset-0 flex justify-center items-center">
-      <img
-        alt="Product screenshot"
-        src="https://mmtybpddrcnkqqdxfuzm.supabase.co/storage/v1/object/public/game-img/char-tweleve.png"
-        className="max-w-full max-h-full object-contain"
-      />
-    </div>
-
-
 
       {/* Buttons */}
-      <div className="flex gap-8">
+      <div className="flex gap-8 mb-auto mt-16">
         <Link href="/play/storyline">
           <Button className="bg-[#ffa13d] hover:bg-[#ffbb3b] px-6 py-3 rounded-lg text-lg shadow-lg transition-transform transform hover:scale-105">
             Story Mode
