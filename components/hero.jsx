@@ -2,6 +2,7 @@ import { playfair } from "@/app/(user)/layout";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import React from "react";
 import { Button } from "./ui/button";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -29,7 +30,6 @@ export default function Hero() {
 
                 <p className="mt-8 text-pretty text-lg font-medium text-gray-500 sm:max-w-md sm:text-xl/8 lg:max-w-none">
                   Embark on an emotional journey through memories in Story Mode. Explore the world of Ava and uncover her past through the power of words. 
-                  {/*  or test your speed and claim the leaderboard crown in Free Mode. Choose your way! */}
                 </p>
                 <div className="mt-10 flex items-center gap-x-6">
                   <SignedOut>
@@ -40,9 +40,9 @@ export default function Hero() {
                   <SignedIn>
                     <UserButton />
                   </SignedIn>
-                  <a href="#" className="text-sm/6 font-semibold text-[#98c1d9]">
-                    Live demo <span aria-hidden="true">→</span>
-                  </a>
+                  <Link href="https://shivamkatareblog.hashnode.dev/introducing-echoes-step-into-the-world-of-memories-and-emotions" target="_blank" className="text-sm/6 font-semibold text-[#98c1d9]">
+                    Learn more <span aria-hidden="true">→</span>
+                  </Link>
                 </div>
               </div>
               <div className="mt-14 flex justify-end gap-8 sm:-mt-44 sm:justify-start sm:pl-20 lg:mt-0 lg:pl-0">

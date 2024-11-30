@@ -31,8 +31,6 @@ function Play() {
   const username = useUser().user?.fullName;
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
-  // Initialize Howler.js instance
-  // Initialize Howler.js instance
   useEffect(() => {
     const soundInstance = new Howl({
       src: ['/audio/mainbg.mp3'],
@@ -111,7 +109,7 @@ function Play() {
 
         <Link
           href="https://github.com/Shivam-Katare/echoes"
-          target="https://github.com/Shivam-Katare/echoes"
+          target="_blank"
           className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
         >
           <GitCompareIcon size={24} className="text-white" />
@@ -126,7 +124,8 @@ function Play() {
         </Link>
 
         <Link
-          href="/blog"
+          href="https://shivamkatareblog.hashnode.dev/introducing-echoes-step-into-the-world-of-memories-and-emotions"
+          target='_blank'
           className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
         >
           <Newspaper size={24} className="text-white" />

@@ -1,11 +1,8 @@
 "use client";
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { Button } from "@/components/ui/button"
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { signOut } from '@/lib/auth'
+import { useEffect } from 'react'
 import useAuthStore from '@/store/authStore';
 import Hero from '@/components/hero';
 import SectionTwo from '@/components/sections/section-two';
@@ -14,36 +11,18 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import SectionFour from '@/components/sections/section-four';
 import SectionThree from '@/components/sections/section-three';
 import SectionFive from '@/components/sections/section-five';
-import { GitCompareArrows, Heart } from 'lucide-react';
 
 
 export default function LandingPage() {
 
   const { user, fetchUser } = useAuthStore();
-  const router = useRouter();
-  const [isLocalhost, setIsLocalhost] = useState(true);
 
   useEffect(() => {
     fetchUser(); // Fetch user details on component mount
   }, []);
 
-  useEffect(() => {
-    setIsLocalhost(window.location.hostname === 'localhost');
-  }, []);
-
-
   return (
     <div className="flex flex-col min-h-screen">
-      {
-        !isLocalhost ? (
-          <div className="w-full bg-black text-center h-screen">
-            <div className='h-screen flex flex-col justify-center'>
-              <h1 className="text-[45px] font-bold text-white">Echoes</h1>
-              <p className="text-white text-[45px] font-[fantasy]">Comming Soon.</p>
-            </div>
-          </div>
-        ) :
-
           <div>
             <main className="flex-1">
               <SectionFour />
@@ -103,7 +82,6 @@ export default function LandingPage() {
               </div>
             </footer>
           </div>
-      }
     </div>
   )
 }
