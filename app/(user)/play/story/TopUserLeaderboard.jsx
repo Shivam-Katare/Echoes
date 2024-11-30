@@ -31,7 +31,6 @@ const TopUserLeaderboard = ({ isLoading, globalLeaderboard }) => {
       <Link href="/play/leaderboard">
         <Button
           className="mt-4"
-          onClick={() => console.log('Check complete leaderboard')}
         >
           Check complete leaderboard
         </Button>

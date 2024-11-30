@@ -11,7 +11,6 @@ const usePlayStore = create((set) => ({
 
   fetchCheckpoint: async (session, userId) => {
     if (!session) {
-      console.error('Session is required to fetch checkpoints');
       return;
     }
 
@@ -26,7 +25,6 @@ const usePlayStore = create((set) => ({
         .order('chapter_id', { ascending: true });
 
       if (error) {
-        console.error('Error fetching checkpoint:', error);
         set({
           checkpoint: [
             {
@@ -58,7 +56,6 @@ const usePlayStore = create((set) => ({
         isLoading: false,
       });
     } catch (error) {
-      console.error('Unexpected error:', error);
       set({
         checkpoint: [
           {
@@ -76,7 +73,6 @@ const usePlayStore = create((set) => ({
 
   updateCheckpoint: async (session, userId, checkpointData) => {
     if (!session) {
-      console.error('Session is required to update checkpoints');
       return;
     }
   
@@ -90,7 +86,6 @@ const usePlayStore = create((set) => ({
         .eq('user_id', userId);
   
       if (error) {
-        console.error('Error fetching checkpoint:', error);
         set({ isLoading: false });
         return;
       }
@@ -103,7 +98,6 @@ const usePlayStore = create((set) => ({
           .eq('user_id', userId);
   
         if (updateError) {
-          console.error('Error updating checkpoint:', updateError);
         }
       } else {
         // Insert new checkpoint
@@ -119,7 +113,7 @@ const usePlayStore = create((set) => ({
         }
       }
     } catch (error) {
-      console.error('Unexpected error:', error);
+      set({ isLoading: false });
     } finally {
       set({ isLoading: false });
     }
@@ -191,7 +185,6 @@ const usePlayStore = create((set) => ({
       const paras = data?.data?.paras || [];
       set({ paras });
     } catch (error) {
-      console.error('Error fetching paras:', error);
       set({ paras: [], isLoading: false });
     }
   },
@@ -199,7 +192,6 @@ const usePlayStore = create((set) => ({
   // story mode
   fetchStory: async (session) => {
     if (!session) {
-      console.error('Session is required to fetch stories');
       return;
     }
 
@@ -213,12 +205,10 @@ const usePlayStore = create((set) => ({
         .order('created_at', { ascending: true })
 
       if (error) {
-        console.error('Error fetching stories:', error.message);
         return;
       }
       set({ gameData: data, isLoading: false });
     } catch (error) {
-      console.error('Unexpected error fetching stories:', error);
 
       set({ gameData: [], isLoading: false });
     }
@@ -228,7 +218,6 @@ const usePlayStore = create((set) => ({
 
   fetchGallery: async (session, userId) => {
     if (!session) {
-      console.error('Session is required to fetch stories');
       return;
     }
 
@@ -244,7 +233,6 @@ const usePlayStore = create((set) => ({
         .order('chapter_id', { ascending: true });
 
       if (checkpointError) {
-        console.error('Error fetching checkpoint:', checkpointError);
         set({ galleryImages: [], isLoading: false });
         return;
       }
@@ -256,7 +244,6 @@ const usePlayStore = create((set) => ({
         .order("created_at", { ascending: true });
 
       if (galleryError) {
-        console.error('Error fetching gallery:', galleryError);
         set({ galleryImages: [], isLoading: false });
         return;
       }
@@ -275,7 +262,6 @@ const usePlayStore = create((set) => ({
 
       set({ galleryImages: filteredImages, isLoading: false });
     } catch (error) {
-      console.error('Unexpected error fetching gallery:', error);
       set({ galleryImages: [], isLoading: false });
     }
   }

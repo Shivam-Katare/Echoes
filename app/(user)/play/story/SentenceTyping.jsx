@@ -93,7 +93,7 @@ const SentenceTyping = ({
                   <div ref={textContainerRef} className="glass rounded-xl p-8 h-[200px] overflow-hidden relative pointer-events-none">
                     <p className="text-2xl text-white font-mono leading-relaxed">
                       {text.split('').map((char, index) => {
-                        let color = 'text-gray-500';
+                        let color = 'text-black';
                         if (index < currentText.length) {
                           color = currentText[index] === char ? 'text-green-400' : 'text-red-400';
                         }

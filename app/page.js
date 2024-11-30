@@ -14,6 +14,7 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from '@clerk/nextjs';
 import SectionFour from '@/components/sections/section-four';
 import SectionThree from '@/components/sections/section-three';
 import SectionFive from '@/components/sections/section-five';
+import { GitCompareArrows, Heart } from 'lucide-react';
 
 
 export default function LandingPage() {
@@ -95,19 +96,11 @@ export default function LandingPage() {
                 </div>
               </section>
             </main>
-            <footer className="flex flex-col gap-2 sm:flex-row py-6 w-full shrink-0 items-center px-4 md:px-6 border-t">
-              <p className="text-xs text-gray-500">© 2024 Echoes. All rights reserved.</p>
-              <nav className="sm:ml-auto flex gap-4 sm:gap-6">
-                <Link className="text-xs hover:underline underline-offset-4" href="#">
-                  Privacy Policy
-                </Link>
-                <Link className="text-xs hover:underline underline-offset-4" href="#">
-                  Terms of Service
-                </Link>
-                <Link className="text-xs hover:underline underline-offset-4" href="#contact">
-                  Support
-                </Link>
-              </nav>
+            <footer className="text-center py-6 w-full px-4 md:px-6 border-t">
+              <div className="grid grid-rows-2 place-items-center">
+                <Link href="https://github.com/Shivam-Katare/echoes" target="_blank" className="text-xs text-white font-serif font-bold">Made with Emotions by Shivam Katare</Link>
+                <p className="text-xs text-white font-serif font-bold">© 2024 Echoes. All rights reserved.</p>
+              </div>
             </footer>
           </div>
       }

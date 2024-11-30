@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 const useLeaderboardStore = create((set, get) => ({
   userId: null,
   username: null,
+  profilData: null,
   score: 0,
   words_typed: 0,
   accuracy: 0,
@@ -32,7 +33,6 @@ const useLeaderboardStore = create((set, get) => ({
 
   fetchGlobalLeaderboard: async (session) => {
     if (!session) {
-      console.error('Session is required to fetch the leaderboard');
       return;
     }
 
@@ -40,17 +40,16 @@ const useLeaderboardStore = create((set, get) => ({
     set({ isLoading: true });
 
     try {
-      const { data, error } = await supabase.rpc('global_board'); // Use RPC if creating a stored function
+      const { data, error } = await supabase.rpc('global_board');
 
       if (error) {
-        console.error('Error fetching global leaderboard:', error);
         return null;
       }
 
       set({ globalLeaderboard: data });
       return data;
     } catch (err) {
-      console.error('Unexpected error fetching global leaderboard:', err);
+      set({ globalLeaderboard: [], isLoading: false });
     } finally {
       set({ isLoading: false });
     }
@@ -59,7 +58,6 @@ const useLeaderboardStore = create((set, get) => ({
 
   fetchLeaderboard: async (session) => {
     if (!session) {
-      console.error('Session is required to fetch the leaderboard');
       return;
     }
   
@@ -72,7 +70,6 @@ const useLeaderboardStore = create((set, get) => ({
         .order('score', { ascending: false });
   
       if (error) {
-        console.error('Error fetching leaderboard:', error.message);
         return null;
       }
   
@@ -82,13 +79,11 @@ const useLeaderboardStore = create((set, get) => ({
       supabase
        .from('LeaderBoard')
        .on('INSERT', payload => {
-        console.log('Leaderboard updated:', payload.new);
         set(state => ({
           leaderboard: [payload.new, ...state.leaderboard].sort((a, b) => b.score - a.score)
         }))
        })
        .on('UPDATE', payload => {
-        console.log('Leaderboard updated:', payload.new);
         set(state => ({
           leaderboard: state.leaderboard.map(entry => entry.id === payload.new.id ? payload.new : entry)
         }))
@@ -97,7 +92,7 @@ const useLeaderboardStore = create((set, get) => ({
 
       return data; // Return data for further use
     } catch (err) {
-      console.error('Unexpected error fetching leaderboard:', err);
+      set({ leaderboard: [], isLoading: false });
     } finally {
       set({ isLoading: false });
     }
@@ -129,9 +124,54 @@ const useLeaderboardStore = create((set, get) => ({
       get().fetchLeaderboard(session);
       get().fetchGlobalLeaderboard(session);
     } catch (err) {
-      console.error("Unexpected error saving leaderboard entry:", err);
+      toast.error("Error saving leaderboard entry. Please try again later.");
     }
   },
+
+  fetchProfileData: async (session, userId) => {
+    if (!session || !userId) {
+      toast.error("Login required to fetch profile data. Please login and try again.");
+      return;
+    }
+
+    set({ isLoading: true });
+
+    try {
+      const leaderboardData = await get().fetchGlobalLeaderboard(session);
+
+      if (!leaderboardData) {
+        toast.error("Error fetching leaderboard data. Please try again later.");
+        return;
+      }
+
+      const userProfile = leaderboardData.find(player => player?.user_id === userId);
+
+      if (userProfile) {
+        // Set the profile data in the store
+        set({ profileData: userProfile });
+        return userProfile;
+      } else {
+        // If user not found in leaderboard, set default values
+        set({
+          profileData: {
+            user_id: userId,
+            userName: "Anonymous",
+            total_score: 0,
+            total_wpm: 0,
+            highest_wpm: 0,
+            avg_accuracy: 0,
+            difficulties_played: "",
+            last_played: null,
+            total_games_played: 0,
+            rank: null
+          }
+        });
+      }
+    } catch (err) {
+      set({ profileData: null });
+      toast.error("Error fetching profile data. Please try again later.");
+    }
+  }
   
 }));
 export default useLeaderboardStore;

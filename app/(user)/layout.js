@@ -9,7 +9,6 @@ export const merienda = Merienda({ subsets: ['vietnamese'], weight: '500' });
 const Layout = React.memo(({ children }) => {
   return (
     <div className="">
-      {/* <Navbar /> */}
       <div className="w-full">
         {children}
       </div>

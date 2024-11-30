@@ -9,6 +9,8 @@ import { useUser } from '@clerk/nextjs';
 import { fetchUserStoryline } from '@/lib/storyManager';
 import { StorylineManager } from './StorylineManager';
 import LoadingStory from '@/components/loading-story';
+import LoadingSpinner from '@/components/loading-spinner';
+import toast from 'react-hot-toast';
 
 function Storyline() {
   const { session } = useSession();
@@ -27,7 +29,6 @@ function Storyline() {
   const handleTitleComplete = () => {
     setShowTitle(false);
     setCurrentChunkIndex(storylineData.lastChunkId || 0);
-    console.log("currentChunkIndex", storylineData.lastChunkId);
   };
 
   const handleNextChapter = () => {
@@ -59,10 +60,8 @@ function Storyline() {
     const maxChunks = storylineData.stories[0]?.story_chunks?.length || 0;
     if (nextChunkIndex < maxChunks) {
       setCurrentChunkIndex(nextChunkIndex);
-      console.log("KYA YE RUN HO RAHA HAI?", nextChunkIndex);
     } else {
       handleNextChapter();
-      console.log("YA FIR ELSE?", nextChunkIndex);
     }
   };
 
@@ -75,10 +74,8 @@ function Storyline() {
       if (!session) return;
 
       try {
-        console.log('Fetching story...');
         await fetchStory(session);
       } catch (error) {
-        console.error('Error fetching story:', error);
       }
     };
 
@@ -95,10 +92,8 @@ function Storyline() {
       if (!gameData?.length) return;
 
       try {
-        console.log('Fetching checkpoint...');
         await fetchCheckpoint(session, user_id);
       } catch (error) {
-        console.error('Error fetching checkpoint:', error);
       }
     };
 
@@ -110,19 +105,14 @@ function Storyline() {
 
   useEffect(() => {
     if (!gameData?.length || !checkpoint?.length) return;
-    console.log("aree bhai", checkpoint);
-    console.log('Processing storyline data...');
     const storylineResult = fetchUserStoryline(checkpoint, gameData);
-    console.log("storylineResult", storylineResult);
     
     if (storylineResult.error) {
-      console.error('Error processing storyline:', storylineResult.error);
+      toast.error("Something went wrong while fetching storyline data. Refresh the page to try again.");
     }
 
     if(storylineResult) {
-      // Do any operations with storylineResult here
-      console.log("storylineResult for chunks:", storylineResult);
-      
+      // Do any operations with storylineResult here      
       setStorylineData(storylineResult);
       setCurrentChunkIndex(storylineResult?.lastChunkId || 0);
     }
@@ -131,7 +121,7 @@ function Storyline() {
   const currentChunk = !showTitle && storylineData.stories[0]?.story_chunks?.[currentChunkIndex];
 
   if (isLoading || !gameData?.length || !checkpoint?.length) {
-    return <LoadingStory textToShow = {"Loading stories..."} />
+    return <LoadingSpinner />
   }
 
   if (!storylineData.stories.length) {

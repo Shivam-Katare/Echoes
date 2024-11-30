@@ -4,6 +4,9 @@ import usePlayStore from '@/store/playStore';
 import { useSession } from '@clerk/nextjs';
 import { useUser } from '@clerk/nextjs';
 import { nunito } from '../../layout';
+import useGameSettingsStore from '@/store/useGameSettings';
+import LoadingStory from '@/components/loading-story';
+import LoadingSpinner from '@/components/loading-spinner';
 
 function TypingGameComponent({ chunk, onComplete, currentChapter, onNextChapter, chapterStory }) {
   const [currentWordIndex, setCurrentWordIndex] = useState(0);
@@ -21,7 +24,8 @@ function TypingGameComponent({ chunk, onComplete, currentChapter, onNextChapter,
   const user = useUser().user;
   const userId = user?.id ?? '';
 
-  console.log("bhai ye chunk chuck chuck kar check kar warna chuccy chuck chunk hoga", chapterStory)
+  const { isTransitioning, setIsTransitioning } = useGameSettingsStore();
+
   // Countdown Timer
   useEffect(() => {
     if (gameStarted && timeLeft > 0 && !gameResult) {
@@ -76,6 +80,7 @@ function TypingGameComponent({ chunk, onComplete, currentChapter, onNextChapter,
   useEffect(() => {
     if (gameResult) {
       if (gameResult === 'win') {
+        setIsTransitioning(true);
         // Find current chunk index in story_chunks array
         const currentChunkIndex = chapterStory.story_chunks.findIndex(
           (storyChunk) => Number(storyChunk.chunk_id) === Number(chunk.chunk_id)
@@ -95,7 +100,6 @@ function TypingGameComponent({ chunk, onComplete, currentChapter, onNextChapter,
         }
   
         // Save checkpoint with updated chapter and chunk
-        console.log('TypingGame: Saving checkpoint...', nextChapterId, nextChunkId);
         updateCheckpoint(session, userId, {
           chapter_id: nextChapterId,
           last_chunk_id: nextChunkId,
@@ -108,6 +112,10 @@ function TypingGameComponent({ chunk, onComplete, currentChapter, onNextChapter,
     }
   }, [gameResult, onComplete, session, userId, currentChapter, updateCheckpoint, chapterStory, chunk]);
   
+
+  if(isTransitioning) {
+    return <LoadingSpinner />
+  }
 
   return (
     <motion.div

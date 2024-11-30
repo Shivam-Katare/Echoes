@@ -13,7 +13,7 @@ const navigation = [
   { name: 'Free Type', href: '/play/story' },
   { name: 'Gallery', href: '/play/gallery' },
   { name: 'Leaderboard', href: '/play/leaderboard' },
-  { name: 'Credits', href: '#' },
+  { name: 'Credits', href: '/play/credits' },
 ]
 
 export default function Header() {
@@ -47,12 +47,11 @@ export default function Header() {
         <div className="hidden lg:flex lg:gap-x-12 lg:items-center">
           {navigation.map((item) => (
             <>
-            {console.log(item)}
-               <Link key={item.name} href={item.href} className="text-sm/6 font-semibold text-[#97c0d8]">
-              {item.name}
-            </Link>
+              <Link key={item.name} href={item.href} className="text-sm/6 font-semibold text-[#97c0d8]">
+                {item.name}
+              </Link>
             </>
-          
+
           ))}
           <SignedOut>
             <SignInButton mode="modal">
@@ -66,20 +65,22 @@ export default function Header() {
       </nav>
       <Dialog open={mobileMenuOpen} onClose={setMobileMenuOpen} className="lg:hidden">
         <div className="fixed inset-0 z-10" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+        <DialogPanel className="fixed inset-y-0 right-0 z-10 w-full overflow-y-auto gradient-hero-4 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <Link href="#" className="-m-1.5 p-1.5">
-              <span className="sr-only">Your Company</span>
-              <img
-                alt=""
-                src="https://tailwindui.com/plus/img/logos/mark.svg?color=indigo&shade=600"
-                className="h-8 w-auto"
+            <Link href="/" className="-m-1.5 p-1.5">
+              <Image
+                src="/logoBlack.png"
+                alt="Echoes Logo"
+                width={32}
+                height={32}
+                className="rounded-lg h-8 w-auto"
               />
+              <span className="sr-only">Echoes</span>
             </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              className="-m-2.5 rounded-md p-2.5 text-white"
             >
               <span className="sr-only">Close menu</span>
               <X aria-hidden="true" className="size-6" />
@@ -92,7 +93,7 @@ export default function Header() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-gray-900 hover:bg-gray-50"
+                    className="-mx-3 block rounded-lg px-3 py-2 text-base/7 font-semibold text-white hover:bg-gray-50"
                   >
                     {item.name}
                   </Link>

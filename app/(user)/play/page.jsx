@@ -4,16 +4,33 @@ import React, { useEffect, useState } from 'react';
 import { Howl } from 'howler';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { GitCompareIcon, Github, Info, Newspaper, VideoIcon, Volume2, VolumeOff, XCircle } from 'lucide-react';
-import { useUser } from '@clerk/nextjs';
+import { GitCompareIcon, Info, Newspaper, Volume2, VolumeOff, XCircle } from 'lucide-react';
+import { useSession, useUser } from '@clerk/nextjs';
 import { BackgroundParticles } from '@/components/background-particles';
 import Image from 'next/image';
+import useLeaderboardStore from '@/store/leaderboardStore';
+import ProfileCardDialog from '@/components/dialogs/profile-card';
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 function Play() {
+  const { isLoading, globalLeaderboard, profileData, fetchGlobalLeaderboard, fetchProfileData } = useLeaderboardStore();
+  const { session } = useSession();
   const [isPlaying, setIsPlaying] = useState(true);
   const [sound, setSound] = useState(null);
+  const user = useUser().user;
+  const userId = user?.id ?? '';
   const username = useUser().user?.fullName;
-
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(false);
   // Initialize Howler.js instance
   // Initialize Howler.js instance
   useEffect(() => {
@@ -32,6 +49,16 @@ function Play() {
     };
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      if (session && userId) {
+        await fetchGlobalLeaderboard(session);
+        await fetchProfileData(session, userId);
+      }
+    };
+
+    fetchData();
+  }, [session, userId]);
 
   // Play/Pause toggle handler
   const togglePlay = () => {
@@ -44,6 +71,15 @@ function Play() {
       setIsPlaying(!isPlaying);
     }
   };
+
+  const handleOpenProfileModal = () => {
+    setIsProfileModalOpen(true);
+  }
+
+  useEffect(() => {
+    setShowWelcome(true);
+  }, []);
+
 
   return (
     <div className="min-h-screen flex flex-col items-center text-white relative overflow-hidden">
@@ -74,15 +110,15 @@ function Play() {
         </button>
 
         <Link
-          href="https://github.com/your-repo-link"
-          target="_blank"
+          href="https://github.com/Shivam-Katare/echoes"
+          target="https://github.com/Shivam-Katare/echoes"
           className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
         >
           <GitCompareIcon size={24} className="text-white" />
         </Link>
 
         <Link
-          href="https://twitter.com/your-profile"
+          href="https://x.com/Shivamkatare_27"
           target="_blank"
           className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
         >
@@ -96,26 +132,33 @@ function Play() {
           <Newspaper size={24} className="text-white" />
         </Link>
 
-        <Link
-          href="/trailer"
-          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
-        >
-          <VideoIcon size={24} className="text-white" />
-        </Link>
+        {
+          session && (
+            <Drawer>
+          <DrawerTrigger asChild>
+            <button
+              className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
+            >
+              <Info size={24} className="text-white" />
+            </button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <ProfileCardDialog profileData={profileData} />
+          </DrawerContent>
+        </Drawer>
+          )
+        }
 
-        <Link
-          href="/notes"
-          className="p-2 rounded-full bg-black/60 hover:bg-black/80 transition"
-        >
-          <Info size={24} className="text-white" />
-        </Link>
       </div>
 
       {/* Memory Orbs */}
       <BackgroundParticles />
 
       {/* Hero Section */}
-      <div className="text-center mt-40 md:mt-6">
+      {
+        userId && session && (
+          <>
+            <div className="text-center mt-40 md:mt-6">
         <p className="text-[38px] font-[100] animate-fadeIn">
           Welcome, {username}
         </p>
@@ -126,6 +169,9 @@ function Play() {
           Step into a world of memories and emotions
         </p>
       </div>
+          </>
+        )
+      }
 
 
       {/* Buttons */}

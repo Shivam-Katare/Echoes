@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import usePlayStore from "@/store/playStore";
 import TimesUpDialog from "@/components/dialogs/timesup-dialog";
-import { List, Music } from "lucide-react";
+import { List, Music, Volume2, VolumeOff } from "lucide-react";
 import useLeaderboardStore from "@/store/leaderboardStore";
 import { useSession } from "@clerk/nextjs";
 import { useUser } from '@clerk/nextjs';
@@ -26,7 +26,6 @@ const correctSound = new Howl({
 const incorrectSound = new Howl({
   src: ['/audio/incorrect.mp3']
 });
-
 
 function Story() {
   const [input, setInput] = useState("");
@@ -64,6 +63,35 @@ function Story() {
   // States for SentenceTyping
   const [text, setText] = useState('');
   const [currentText, setCurrentText] = useState('');
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [sound, setSound] = useState(null);
+
+  useEffect(() => {
+    const soundInstance = new Howl({
+      src: ['/audio/credsbg.mp3'],
+      autoplay: true,
+      loop: true,
+      volume: 0.03,
+    });
+
+    setSound(soundInstance);
+
+    // Cleanup Howler instance on component unmount
+    return () => {
+      soundInstance.stop();
+    };
+  }, []);
+
+  const togglePlay = () => {
+    if (sound) {
+      if (isPlaying) {
+        sound.pause();
+      } else {
+        sound.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
 
   const handleStartGame = () => {
     setShowCountdown(true);
@@ -150,7 +178,6 @@ function Story() {
                         break;
                     }
                     attempts++;
-                    console.log('Attempt:', attempts);
                 }
 
                 // Fallback if no unique word found
@@ -384,10 +411,15 @@ const handleSentenceInput = (e) => {
       <div className="absolute top-4 left-4 flex items-center gap-4 z-50 mt-16">
         <button
           aria-label="Toggle Music"
-          onClick={() => console.log('Toggle Music')}
+          onClick={togglePlay}
           className="p-2 bg-white/80 rounded-full shadow-lg hover:bg-white/90 transition duration-300"
+          title={isPlaying ? 'Pause Music' : 'Play Music'}
         >
-          <Music className="h-6 w-6 text-black" />
+           {isPlaying ? (
+            <Volume2 size={24} className="text-black" />
+          ) : (
+            <VolumeOff size={24} className="text-black" />
+          )}
         </button>
         <button
           aria-label="Select Typing Category"
@@ -462,7 +494,7 @@ const handleSentenceInput = (e) => {
       <TimesUpDialog
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
-        playData={{ typedWords: correctCount + incorrectCount, time: timer, correctCount, incorrectCount }}
+        playData={{ typedWords: correctCount + incorrectCount, correctCount, incorrectCount, time: parseInt(time) - timer }}
         restartGame={handleRestart}
         isLoading={false}
       />

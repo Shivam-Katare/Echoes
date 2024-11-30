@@ -2,7 +2,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Trophy } from 'lucide-react';
-import FilterBar from './Filterbar';
 import TopThree from './TopThree';
 import LeaderboardTable from './LeaderboardTable';
 import useLeaderboardStore from '@/store/leaderboardStore';
@@ -34,11 +33,11 @@ function Leaderboard() {
 
       {
         isLoading || !globalLeaderboard ? (
-          <h1 className='text-center text-yellow-500 font-bold text-[35px]'>Loading Players...</h1>
+          <LoadingSpinner />
         ) : (
           <>
             <TopThree data={globalLeaderboard} />
-            <LeaderboardTable data={globalLeaderboard} />
+            <LeaderboardTable data={globalLeaderboard} onRefresh={fetchGlobalLeaderboard} />
           </>
         )
       }

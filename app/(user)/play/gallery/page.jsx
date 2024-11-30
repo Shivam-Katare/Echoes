@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import GalleryWall from "./GalleryWall";
 import usePlayStore from "@/store/playStore";
 import { useSession, useUser } from "@clerk/nextjs";
-import LoadingStory from "@/components/loading-story";
+import LoadingSpinner from "@/components/loading-spinner";
 
 export default function Gallery() {
   const { session } = useSession();
@@ -22,7 +22,6 @@ export default function Gallery() {
   useEffect(() => {
     if (gameData.length && checkpoint.length) {
       fetchGallery(session, user_id);
-      console.log("fetchGallery");
     }
   }, [fetchGallery, gameData, checkpoint]);
   return (
@@ -35,7 +34,7 @@ export default function Gallery() {
       {
         isLoading ? (
             <div className="flex justify-center items-center h-screen">
-              <LoadingStory textToShow="Loading Gallery..." />
+              <LoadingSpinner />
             </div>
           ) : <GalleryWall images={galleryImages} />
       }

@@ -21,27 +21,22 @@ function StoryChunkComponent({ chunk, onComplete }) {
       // If no audio, wait for reading time based on content length
       const readingTime = Math.max(chunk.content.length * 50, 3000); // Min 3 seconds
       const timer = setTimeout(onComplete, readingTime);
-      console.log("StoryChunk: readingTime", readingTime);
       return () => clearTimeout(timer);
     }
 
     // Initialize audio with preload
-    console.log("StoryChunk:", chunk.audio_url);
     soundRef.current = new Howl({
       src: [chunk.audio_url],
       html5: true,
       preload: true,
       volume: 1,
       onload: () => {
-        console.log("StoryChunk: Audio loaded, playing...");
         soundRef.current.play();
       },
       onend: () => {
-        console.log("StoryChunk: onend");
         onComplete();
       },
       onloaderror: (id, error) => {
-        console.error('Audio loading error:', error);
         // Fallback to timeout if audio fails
         const fallbackTimer = setTimeout(onComplete, 5000);
         return () => clearTimeout(fallbackTimer);
@@ -50,7 +45,6 @@ function StoryChunkComponent({ chunk, onComplete }) {
 
     return () => {
       if (soundRef.current) {
-        console.log("StoryChunk: Cleaning up audio");
         soundRef.current.unload();
       }
     };

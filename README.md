@@ -1,36 +1,86 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# **Echoes**
 
-## Getting Started
+**Echoes** is a Speed Typing RPG that combines fast-paced typing mechanics with an emotionally driven storyline. Journey through a world where memories hold the key to redemption, as you uncover the heartfelt story of a father and daughter, interwoven with themes of time, memory, and personal growth.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## **Features**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Immersive Narrative:** Experience an emotional story that evolves with each level as you unlock fragments of a father’s cherished memories with his daughter.
+- **Speed Typing Combat:** Play challanges to complete the story.
+- **Collect Memories:** Collect memories to explore the world of Ava.
+- **Diverse Gameplay Modes:**  
+  - **Storyline Mode:** Follow the gripping narrative and immerse yourself in a sequence of emotionally charged levels.  
+  - **Free Play Mode:** Hone your typing skills with infinite challenges.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## **Technologies Used**
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend:** Built with [Next.js](https://nextjs.org/) for a seamless and responsive UI/UX.
+- **Backend:** Powered by [Modus](https://docs.hypermode.com/modus/overview), a serverless framework for API and function management.
+- **Database:** [Supabase](https://supabase.com/) for data storage.
+- **Clerk:** [Clerk](https://clerk.com/) for authentication.
+- **State Management:** Managed with `Zustand` for optimized performance.
+- **Design:** Styled with `Tailwind CSS` for a modern and minimalistic appearance.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## **Game Modes**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### **Storyline Mode**
+Follow an emotionally engaging narrative as you type your way through challenges. Each level uncovers a new memory, building a heartfelt connection between the characters and the player.
 
-## Deploy on Vercel
+### **Free Play Mode**
+Perfect for improving your typing skills. Select word categories and enjoy endless gameplay with increasing difficulty.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## **Screenshots**
+
+- **Home Screen:**
+   
+- **Gameplay:**
+
+- **Storyline Mode:**
+ 
+- **Memories:**
+
+
+## **Contributing**
+
+Contributions are welcome! If you'd like to help improve Echoes, follow these steps:
+
+1. Fork the repository.
+2. Create a new branch:
+   ```bash
+   git checkout -b feature-name
+   ```
+3. Make your changes and commit them:
+   ```bash
+   git commit -m "Add feature-name"
+   ```
+4. Push to your fork:
+   ```bash
+   git push origin feature-name
+   ```
+5. Create a pull request.
+
+---
+
+## **License**
+
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
+
+---
+
+## **Acknowledgements**
+
+- Inspired by a love for storytelling and RPGs with unique gameplay mechanics.
+- Built with cutting-edge technologies like Modus and Next.js.
+- Thanks to Hashnode for organizing this incrediable Hackathon.
+
+---
+
+Made with Emotions, by Shivam Katare

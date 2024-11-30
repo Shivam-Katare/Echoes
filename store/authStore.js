@@ -27,7 +27,6 @@ const useAuthStore = create((set, get) => ({
       .eq('id', session.user.id);
 
     if (error) {
-      console.error('Error fetching user data:', error.message);
     } else {
       set({ userData: data });
     }
@@ -40,11 +39,9 @@ const useAuthStore = create((set, get) => ({
     });
 
     if (error) {
-      console.error('Google Sign-In Error:', error.message);
       return { error };
     }
 
-    console.log('Google Sign-In Data:', data);
     await useAuthStore.getState().fetchUser(); // Refresh the user state after login
     return { data };
   },

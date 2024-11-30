@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Award, RefreshCw, Target } from "lucide-react";
 import { difficultyColors } from "@/lib/utils";
 import dayjs from "dayjs";
+import { useSession } from "@clerk/nextjs";
 
 function LeaderboardTable({ data, onRefresh }) {
-
+  const { session } = useSession();
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
@@ -16,25 +17,28 @@ function LeaderboardTable({ data, onRefresh }) {
     return data?.filter(entry => entry.rank > 3) || [];
   }, [data]);
 
-// Replace both useEffect hooks with this single one
-useEffect(() => {
-  // Return early if no data
-  if (!data) return;
-  
-  // Filter data for table display
-  const filteredData = data.filter(entry => entry.rank > 3);
-  
-  // Calculate pagination
-  const total = Math.ceil(filteredData.length / itemsPerPage);
-  setTotalPages(total);
-  
-  // Calculate current page items
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
-  
-  setPaginatedData(currentItems);
-}, [data, currentPage, itemsPerPage]);
+  const handleRefresh = () => {
+    onRefresh(session);
+  }
+
+  useEffect(() => {
+    // Return early if no data
+    if (!data) return;
+
+    // Filter data for table display
+    const filteredData = data.filter(entry => entry.rank > 3);
+
+    // Calculate pagination
+    const total = Math.ceil(filteredData.length / itemsPerPage);
+    setTotalPages(total);
+
+    // Calculate current page items
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredData.slice(indexOfFirstItem, indexOfLastItem);
+
+    setPaginatedData(currentItems);
+  }, [data, currentPage, itemsPerPage]);
 
 
   // pagination handlers
@@ -60,7 +64,7 @@ useEffect(() => {
       <div className="flex justify-between items-center p-4 border-b border-gray-200/30">
         <h2 className="text-gray-800 font-semibold">Leaderboard Rankings</h2>
         <button
-          onClick={onRefresh}
+          onClick={handleRefresh}
           className="p-2 hover:bg-white/20 rounded-full transition-colors duration-200"
         >
           <RefreshCw className="w-5 h-5 text-gray-700" />
@@ -83,8 +87,6 @@ useEffect(() => {
                   <th className="px-4 md:px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Accuracy</th>
                   <th className="px-4 md:px-6 py-3 text-left text-xs font-bold uppercase tracking-wider">Total Game Played</th>
                   <th className="px-4 md:px-6 py-3 text-end text-xs font-bold uppercase tracking-wider">Last Played</th>
-                  {/* <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Difficulty</th> */}
-                  {/* <th className="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th> */}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200/30">
@@ -110,17 +112,8 @@ useEffect(() => {
                     </td>
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {/* <img className="h-8 w-8 md:h-10 md:w-10 rounded-full" src={entry.avatar} alt="" /> */}
                         <div className="ml-3 md:ml-4">
                           <div className="font-semibold text-gray-800 text-sm md:text-base">{entry?.userName || "--"}</div>
-                          {/* <div className="flex gap-1">
-                        {entry.badges.includes('fastest') && (
-                          <Target className="w-3 h-3 md:w-4 md:h-4 text-blue-500" />
-                        )}
-                        {entry.badges.includes('accurate') && (
-                          <Award className="w-3 h-3 md:w-4 md:h-4 text-green-500" />
-                        )}
-                      </div> */}
                         </div>
                       </div>
                     </td>
@@ -139,14 +132,6 @@ useEffect(() => {
                     <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-end">
                       <span className="font-medium text-gray-800 text-sm md:text-base">{dayjs(entry?.last_played)?.format("DD/MM/YYYY")}</span>
                     </td>
-                    {/* <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap">
-                  <span className={`inline-flex items-center px-2 md:px-2.5 py-0.5 rounded-full text-xs font-medium ${difficultyColors[entry.difficulty]}`}>
-                    {entry.difficulty}
-                  </span>
-                </td> */}
-                    {/* <td className="px-4 md:px-6 py-3 md:py-4 whitespace-nowrap text-xs md:text-sm text-gray-500">
-                  {entry.date}
-                </td> */}
                   </motion.tr>
                 ))}
               </tbody>

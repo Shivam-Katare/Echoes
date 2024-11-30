@@ -57,7 +57,7 @@ const TimesUpDialog = ({ isOpen, onClose, playData, restartGame }) => {
                 <Check className="w-5 h-5 text-green-400" />
                 <h3 className="text-green-400 font-semibold">Correct Words</h3>
               </div>
-              <p className="text-3xl font-bold text-white">{playData?.typedWords || 0}</p>
+              <p className="text-3xl font-bold text-white">{playData?.correctCount || 0}</p>
             </motion.div>
 
             <motion.div 
@@ -70,38 +70,9 @@ const TimesUpDialog = ({ isOpen, onClose, playData, restartGame }) => {
                 <X className="w-5 h-5 text-red-400" />
                 <h3 className="text-red-400 font-semibold">Incorrect Words</h3>
               </div>
-              <p className="text-3xl font-bold text-white">{playData?.incorrectWords || 0}</p>
+              <p className="text-3xl font-bold text-white">{playData?.incorrectCount || 0}</p>
             </motion.div>
           </div>
-
-          {/* Accuracy and WPM */}
-          <motion.div 
-            className="bg-slate-800/50 p-4 rounded-xl border border-slate-700/50"
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4 }}
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Award className="w-4 h-4 text-indigo-400" />
-                  <span className="text-indigo-400 text-sm">Accuracy</span>
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  {Math.round((playData?.typedWords / (playData?.typedWords + playData?.incorrectWords || 1)) * 100)}%
-                </p>
-              </div>
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <Type className="w-4 h-4 text-indigo-400" />
-                  <span className="text-indigo-400 text-sm">WPM</span>
-                </div>
-                <p className="text-2xl font-bold text-white">
-                  {Math.round((playData?.typedWords || 0) * (60 / 30))}
-                </p>
-              </div>
-            </div>
-          </motion.div>
 
           {/* Countdown */}
           <motion.div 
