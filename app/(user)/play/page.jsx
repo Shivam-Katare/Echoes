@@ -180,7 +180,7 @@ function Play() {
             Story Mode
           </Button>
         </Link>
-        <Link href="/play/free">
+        <Link href="/play/story">
           <Button className="bg-[#ff0000] hover:bg-[#c42323] px-6 py-3 rounded-lg text-lg shadow-lg transition-transform transform hover:scale-105">
             Free Play
           </Button>
